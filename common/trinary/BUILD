@@ -104,7 +104,10 @@ cc_library(
 cc_library(
     name = "trit_tryte",
     srcs = ["trit_tryte.c"],
-    hdrs = ["trit_tryte.h"],
+    hdrs = [
+        "trit_tryte.h",
+        "trit_tryte_sse42.h",
+    ],
     deps = [
         ":trits",
         ":tryte",
