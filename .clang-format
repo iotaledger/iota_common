@@ -2,4 +2,9 @@
 Language:        Cpp
 BasedOnStyle:  Google
 ColumnLimit:     120
+---
+Language:        ObjC
+BasedOnStyle:  Google
+ColumnLimit:     120
+ObjCSpaceBeforeProtocolList: true
 ...
