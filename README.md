@@ -57,7 +57,7 @@ make -j8 && make test
 Adds iota_common to your `CMakeLists.txt` like:
 
 ```
-# The FetchContent module needs cmake version 3.11 or above.# The FetchContent module needs cmake 3.11 above.
+# The FetchContent module needs cmake 3.11 or above.
 cmake_minimum_required(VERSION 3.11)
 
 # fetch iota_common
