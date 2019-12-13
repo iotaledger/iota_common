@@ -2,7 +2,14 @@
 
 This is a collection of libraries containing models, utils, and cryptography primitives used in IOTA. It's able to use in a Bazel or CMake project. 
 
-# Using in a Bazel project  
+# Build and test via Bazel  
+
+```shell
+bazel build -- //... -//mobile/...
+bazel test -- //... -//mobile/...
+```
+
+# Use in a Bazel project  
 
 First you need to add `org_iota_common` to your Bazel project in the `WORKSPACE` file like this:
 
@@ -37,19 +44,58 @@ cc_binary(
 )
 ```
 
-# Build and test via Bazel  
-
-```shell
-bazel build -- //... -//mobile/...
-bazel test -- //... -//mobile/...
-```
-
 # Build and test via CMake  
 
 ```shell
 mkdir build && cd build
 cmake -DCMAKE_INSTALL_PREFIX=. -DTRINARY_TEST=ON ..
 make -j8 && make test
+```
+
+# Use in a CMake project  
+
+Adds iota_common to your `CMakeLists.txt` like:
+
+```
+# The FetchContent module needs cmake version 3.11 or above.# The FetchContent module needs cmake 3.11 above.
+cmake_minimum_required(VERSION 3.11)
+
+# fetch iota_common
+include(FetchContent)
+FetchContent_Declare(
+  iota_common
+  GIT_REPOSITORY https://github.com/iotaledger/iota_common.git
+  GIT_TAG master # could be branch name, tag or commit hash.
+)
+
+if(${CMAKE_VERSION} VERSION_LESS 3.14)
+    macro(FetchContent_MakeAvailable NAME)
+        FetchContent_GetProperties(${NAME})
+        if(NOT ${NAME}_POPULATED)
+            FetchContent_Populate(${NAME})
+            add_subdirectory(${${NAME}_SOURCE_DIR} ${${NAME}_BINARY_DIR})
+        endif()
+    endmacro()
+endif()
+
+message(STATUS "Fetching iota_common")
+FetchContent_MakeAvailable(iota_common)
+
+# iota_common headers
+target_include_directories(<target> <PRIVATE|PUBLIC>
+  "${CMAKE_INSTALL_PREFIX}/include",
+  "${iota_common_SOURCE_DIR}"
+)
+
+# link dependent libraries
+target_link_libraries(<target> <PRIVATE|PUBLIC>
+  logger
+  keccak
+  mbedtls
+  mbedcrypto
+  mbedx509
+)
+
 ```
 
 ## Contributing
