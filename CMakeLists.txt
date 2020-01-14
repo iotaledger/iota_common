@@ -44,7 +44,6 @@ link_directories("${CMAKE_INSTALL_PREFIX}/lib")
 # external libs
 include(cmake/embear_logger.cmake)
 include(cmake/keccak.cmake)
-include(cmake/mbedtls.cmake)
 include(cmake/unity.cmake)
 include(cmake/uthash.cmake)
 
@@ -157,16 +156,12 @@ add_dependencies(common
   ext_uthash
   ext_keccak
   ext_embear_logger
-  ext_mbedtls
 )
 
 target_link_libraries(common PUBLIC 
   Threads::Threads
   keccak
-  logger
-  mbedtls
-  mbedcrypto
-  mbedx509)
+  logger)
 
 # install
 install(TARGETS common DESTINATION "${CMAKE_INSTALL_PREFIX}/lib")
