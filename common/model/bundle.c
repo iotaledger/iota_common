@@ -180,6 +180,10 @@ retcode_t bundle_validate(bundle_transactions_t *const bundle, bundle_status_t *
   }
 
   curr_tx = (iota_transaction_t *)utarray_eltptr(bundle, 0);
+  if (!curr_tx) {
+    *status = BUNDLE_INCOMPLETE;
+    return res;
+  }
   last_index = transaction_last_index(curr_tx);
 
   if (utarray_len(bundle) != last_index + 1) {
