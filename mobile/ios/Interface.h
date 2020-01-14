@@ -29,7 +29,7 @@
                          count:(NSNumber*)count
                         nprocs:(NSNumber*)nprocs
                miningThreshold:(NSNumber*)miningThreshold
-                   fullySecure:(BOOL*)fullySecure;
+                   fullySecure:(BOOL)fullySecure;
 
 @end
 
