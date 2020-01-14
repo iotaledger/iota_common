@@ -231,13 +231,11 @@ JNIEXPORT jstring JNICALL Java_org_iota_mobile_Interface_iota_1digest(JNIEnv* en
 /*
  * Class:     org_iota_mobile_Interface
  * Method:    bundle_miner_mine
- * Signature: ([Ljava/lang/Byte;I[Ljava/lang/Byte;IIII)J
+ * Signature: ([Ljava/lang/Byte;I[Ljava/lang/Byte;IIIIZ)J
  */
-JNIEXPORT jlong JNICALL Java_org_iota_mobile_Interface_bundle_1miner_1mine(JNIEnv* env, jclass,
-                                                                           jbyteArray jbundleNormalizedMax,
-                                                                           jint jsecurity, jbyteArray jessence,
-                                                                           jint jessenceLength, jint jcount,
-                                                                           jint jnprocs, jint jminingThreshold) {
+JNIEXPORT jlong JNICALL Java_org_iota_mobile_Interface_bundle_1miner_1mine(
+    JNIEnv* env, jclass, jbyteArray jbundleNormalizedMax, jint jsecurity, jbyteArray jessence, jint jessenceLength,
+    jint jcount, jint jnprocs, jint jminingThreshold, jboolean jfullySecure) {
   retcode_t ret = RC_OK;
   uint64_t index = 0;
 
@@ -245,7 +243,7 @@ JNIEXPORT jlong JNICALL Java_org_iota_mobile_Interface_bundle_1miner_1mine(JNIEn
   trit_t* essence = (trit_t*)env->GetByteArrayElements(jessence, 0);
 
   ret = bundle_miner_mine(bundleNormalizedMax, jsecurity, essence, jessenceLength, jcount, jnprocs, jminingThreshold,
-                          &index);
+                          jfullySecure, &index);
 
   env->ReleaseByteArrayElements(jbundleNormalizedMax, (jbyte*)bundleNormalizedMax, 0);
   env->ReleaseByteArrayElements(jessence, (jbyte*)essence, 0);
