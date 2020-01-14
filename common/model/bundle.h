@@ -62,8 +62,9 @@ void bundle_transactions_new(bundle_transactions_t **const bundle);
  * @brief Frees a bundle object.
  *
  * @param[in] bundle A bundle object.
+ * @return #retcode_t
  */
-void bundle_transactions_free(bundle_transactions_t **const bundle);
+retcode_t bundle_transactions_free(bundle_transactions_t **const bundle);
 
 /**
  * @brief Adds a transaction to the bundle.
