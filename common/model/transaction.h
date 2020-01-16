@@ -457,9 +457,7 @@ static inline void transaction_set_arrival_timestamp(iota_transaction_t *const t
  ***********************************************************************************************************/
 
 void transaction_reset(iota_transaction_t *const transaction);
-#ifdef DEBUG
 void transaction_obj_dump(iota_transaction_t *tx_obj);
-#endif
 
 uint8_t transaction_weight_magnitude(iota_transaction_t const *const transaction);
 

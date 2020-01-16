@@ -130,7 +130,7 @@ iota_transaction_t *bundle_at(bundle_transactions_t *const bundle, size_t index)
   return NULL;
 }
 
-void bundle_finalize(bundle_transactions_t *bundle, Kerl *const kerl) {
+retcode_t bundle_finalize(bundle_transactions_t *bundle, Kerl *const kerl) {
   iota_transaction_t *curr_tx = NULL;
   bool valid_bundle = false;
   iota_transaction_t *head_tx = NULL;
@@ -138,7 +138,10 @@ void bundle_finalize(bundle_transactions_t *bundle, Kerl *const kerl) {
   trit_t increased_tag_trits[NUM_TRITS_TAG];
   flex_trit_t bundle_hash[FLEX_TRIT_SIZE_243];
 
-  head_tx = (iota_transaction_t *)utarray_front(bundle);
+  if ((head_tx = (iota_transaction_t *)utarray_front(bundle)) == NULL) {
+    return RC_NULL_POINTER;
+  }
+
   flex_trits_to_trits(increased_tag_trits, NUM_TRITS_TAG, transaction_obsolete_tag(head_tx), NUM_TRITS_TAG,
                       NUM_TRITS_TAG);
   while (!valid_bundle) {
@@ -161,6 +164,7 @@ void bundle_finalize(bundle_transactions_t *bundle, Kerl *const kerl) {
     // update bundle_hash
     BUNDLE_FOREACH(bundle, curr_tx) { transaction_set_bundle(curr_tx, bundle_hash); }
   }
+  return RC_OK;
 }
 
 retcode_t bundle_validate(bundle_transactions_t *const bundle, bundle_status_t *const status) {
@@ -179,7 +183,11 @@ retcode_t bundle_validate(bundle_transactions_t *const bundle, bundle_status_t *
     return RC_NULL_PARAM;
   }
 
-  curr_tx = (iota_transaction_t *)utarray_eltptr(bundle, 0);
+  if ((curr_tx = (iota_transaction_t *)utarray_eltptr(bundle, 0)) == NULL) {
+    *status = BUNDLE_NOT_INITIALIZED;
+    return RC_NULL_POINTER;
+  }
+
   last_index = transaction_last_index(curr_tx);
 
   if (utarray_len(bundle) != last_index + 1) {
@@ -319,9 +327,7 @@ retcode_t bundle_sign(bundle_transactions_t *const bundle, flex_trit_t const *co
   return RC_OK;
 }
 
-#ifdef DEBUG
 void bundle_dump(bundle_transactions_t *bundle) {
   iota_transaction_t *curr_tx = NULL;
   BUNDLE_FOREACH(bundle, curr_tx) { transaction_obj_dump(curr_tx); }
 }
-#endif
