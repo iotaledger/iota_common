@@ -132,8 +132,9 @@ void bundle_calculate_hash(bundle_transactions_t *bundle, Kerl *const kerl, flex
  *
  * @param[in] bundle A bundle object.
  * @param[in] kerl A Kerl object.
+ * @return #retcode_t
  */
-void bundle_finalize(bundle_transactions_t *bundle, Kerl *const kerl);
+retcode_t bundle_finalize(bundle_transactions_t *bundle, Kerl *const kerl);
 
 /**
  * @brief Validates a bundle.
@@ -171,9 +172,7 @@ void bundle_set_messages(bundle_transactions_t *bundle, signature_fragments_t *m
 retcode_t bundle_sign(bundle_transactions_t *const bundle, flex_trit_t const *const seed, inputs_t const *const inputs,
                       Kerl *const kerl);
 
-#ifdef DEBUG
 void bundle_dump(bundle_transactions_t *bundle);
-#endif
 
 /**
  * @brief The bundle iterator.

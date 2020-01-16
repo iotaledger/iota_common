@@ -12,6 +12,7 @@ cc_test(
     timeout = "short",
     srcs = ["test_bundle.c"],
     deps = [
+        ":defs",
         "//common/crypto/iss:normalize",
         "//common/model:bundle",
         "//common/trinary:flex_trit",

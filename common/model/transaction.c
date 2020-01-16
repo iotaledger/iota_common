@@ -5,12 +5,10 @@
  * Refer to the LICENSE file for licensing information
  */
 
-#include <stdlib.h>
-#include <string.h>
-#ifdef DEBUG
 #include <inttypes.h>
 #include <stdio.h>
-#endif
+#include <stdlib.h>
+#include <string.h>
 
 #include "common/crypto/curl-p/digest.h"
 #include "common/model/transaction.h"
@@ -297,7 +295,6 @@ size_t transaction_deserialize_from_trits(iota_transaction_t *const transaction,
 // Free an existing transaction - compatible with free()
 void transaction_free(iota_transaction_t *const transaction) { free(transaction); }
 
-#ifdef DEBUG
 void transaction_obj_dump(iota_transaction_t *tx_obj) {
   field_mask_t old_mask = {};
   memcpy(&old_mask, &tx_obj->loaded_columns_mask, sizeof(field_mask_t));
@@ -353,4 +350,3 @@ void transaction_obj_dump(iota_transaction_t *tx_obj) {
 
   memcpy(&tx_obj->loaded_columns_mask, &old_mask, sizeof(field_mask_t));
 }
-#endif
