@@ -27,7 +27,8 @@ extern "C" {
  */
 #define STR_OK "OK"
 #define STR_ERROR "ERROR"
-#define STR_NULL_PARAM "Attempting to access a null pointer"
+#define STR_NULL_PARAM "The given parameter is NULL"
+#define STR_NULL_POINTER "Accessing to a null pointer"
 /** @} */
 
 // Cclient Module

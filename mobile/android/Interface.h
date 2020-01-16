@@ -66,10 +66,11 @@ JNIEXPORT jstring JNICALL Java_org_iota_mobile_Interface_iota_1digest(JNIEnv *, 
 /*
  * Class:     org_iota_mobile_Interface
  * Method:    bundle_miner_mine
- * Signature: ([Ljava/lang/Byte;I[Ljava/lang/Byte;IIII)J
+ * Signature: ([Ljava/lang/Byte;I[Ljava/lang/Byte;IIIIZ)J
  */
 JNIEXPORT jlong JNICALL Java_org_iota_mobile_Interface_bundle_1miner_1mine(JNIEnv *, jclass, jbyteArray, jint,
-                                                                           jbyteArray, jint, jint, jint, jint);
+                                                                           jbyteArray, jint, jint, jint, jint,
+                                                                           jboolean);
 
 #ifdef __cplusplus
 }

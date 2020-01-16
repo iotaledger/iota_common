@@ -91,9 +91,6 @@ target_include_directories(<target> <PRIVATE|PUBLIC>
 target_link_libraries(<target> <PRIVATE|PUBLIC>
   logger
   keccak
-  mbedtls
-  mbedcrypto
-  mbedx509
 )
 
 ```
