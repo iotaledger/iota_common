@@ -138,7 +138,7 @@ retcode_t bundle_finalize(bundle_transactions_t *bundle, Kerl *const kerl) {
   trit_t increased_tag_trits[NUM_TRITS_TAG];
   flex_trit_t bundle_hash[FLEX_TRIT_SIZE_243];
 
-  if((head_tx = (iota_transaction_t *)utarray_front(bundle)) == NULL){
+  if ((head_tx = (iota_transaction_t *)utarray_front(bundle)) == NULL) {
     return RC_NULL_POINTER;
   }
 
@@ -183,7 +183,7 @@ retcode_t bundle_validate(bundle_transactions_t *const bundle, bundle_status_t *
     return RC_NULL_PARAM;
   }
 
-  if((curr_tx = (iota_transaction_t *)utarray_eltptr(bundle, 0)) == NULL){
+  if ((curr_tx = (iota_transaction_t *)utarray_eltptr(bundle, 0)) == NULL) {
     *status = BUNDLE_NOT_INITIALIZED;
     return RC_NULL_POINTER;
   }
