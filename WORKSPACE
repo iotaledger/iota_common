@@ -17,7 +17,7 @@ bazel_skylib_workspace()
 
 git_repository(
     name = "rules_iota",
-    commit = "e08b0038f376d6c82b80f5283bb0a86648bb58dc",
+    commit = "49b2674474dedd77d46fddf75330ea7dcd23f0d3",
     remote = "https://github.com/iotaledger/rules_iota.git",
 )
 
@@ -50,9 +50,9 @@ load(
 
 apple_rules_dependencies()
 
-load("@rules_iota//:defs.bzl", "iota_deps")
+load("@rules_iota//:defs.bzl", "iota_common_external")
 
-iota_deps()
+iota_common_external()
 
 load("@iota_toolchains//:toolchains.bzl", "setup_initial_deps")
 
