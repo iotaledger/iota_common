@@ -27,6 +27,7 @@ typedef struct bundle_miner_ctx_s {
   uint64_t count;
   uint32_t mining_threshold;
   double probability;
+  bool fully_secure;
   bool was_thread_created;
   bool *optimal_index_found_by_some_thread;
 } bundle_miner_ctx_t;
@@ -63,6 +64,8 @@ void bundle_miner_normalized_bundle_max(byte_t const *const lhs, byte_t const *c
  * @param[in]       mining_threshold            If the found index has expected number of adversarial bundles
  *                                              needed in order to exploit published private key fragments that is
  *                                              greater than mining_threshold, then mining should be stopped
+ * @param[in]       fully_secure                Whether to check if the bundle hash is fully secure even outside of our
+ * desired security level
  * @param[out]      index                       The resulting index
  * @param[in, out]  ctxs                        The ctxs
  * @param[in]       num_ctxs                    The number of ctxs
@@ -72,8 +75,8 @@ void bundle_miner_normalized_bundle_max(byte_t const *const lhs, byte_t const *c
  */
 retcode_t bundle_miner_mine(byte_t const *const bundle_normalized_max, uint8_t const security,
                             trit_t const *const essence, size_t const essence_length, uint32_t const count,
-                            uint64_t mining_threshold, uint64_t *const index, bundle_miner_ctx_t *const ctxs,
-                            size_t num_ctxs, bool *const optimal_index_found);
+                            uint64_t mining_threshold, bool const fully_secure, uint64_t *const index,
+                            bundle_miner_ctx_t *const ctxs, size_t num_ctxs, bool *const optimal_index_found);
 
 /**
  * @brief Allocates ctxs to use to mine bundles, the number of mined ctxs is dependent on

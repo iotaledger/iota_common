@@ -46,7 +46,8 @@ static void *bundle_miner_mine_routine(void *const param) {
 
     normalize_hash(candidate, candidate_normalized);
 
-    if (normalized_hash_is_secure(candidate_normalized, ctx->security * NORMALIZED_FRAGMENT_LENGTH)) {
+    if (normalized_hash_is_secure(candidate_normalized,
+                                  (ctx->fully_secure ? 3 : ctx->security) * NORMALIZED_FRAGMENT_LENGTH)) {
       bundle_miner_normalized_bundle_max(ctx->bundle_normalized_max, candidate_normalized, candidate_normalized_max,
                                          ctx->security * NORMALIZED_FRAGMENT_LENGTH);
       probability = bundle_miner_probability_of_losing(candidate_normalized_max, ctx->security);
@@ -98,8 +99,8 @@ void bundle_miner_normalized_bundle_max(byte_t const *const lhs, byte_t const *c
 
 retcode_t bundle_miner_mine(byte_t const *const bundle_normalized_max, uint8_t const security,
                             trit_t const *const essence, size_t const essence_length, uint32_t const count,
-                            uint64_t mining_threshold, uint64_t *const index, bundle_miner_ctx_t *const ctxs,
-                            size_t num_ctxs, bool *const optimal_index_found) {
+                            uint64_t mining_threshold, bool const fully_secure, uint64_t *const index,
+                            bundle_miner_ctx_t *const ctxs, size_t num_ctxs, bool *const optimal_index_found) {
   retcode_t ret = RC_OK;
   uint32_t rounded_count = count + (num_ctxs - count % num_ctxs);
   thread_handle_t *threads = (thread_handle_t *)malloc(sizeof(thread_handle_t) * num_ctxs);
@@ -136,6 +137,7 @@ retcode_t bundle_miner_mine(byte_t const *const bundle_normalized_max, uint8_t c
     ctxs[i].optimal_index = 0;
     ctxs[i].probability = 1.0;
     ctxs[i].mining_threshold = mining_threshold;
+    ctxs[i].fully_secure = fully_secure;
     ctxs[i].optimal_index_found_by_some_thread = optimal_index_found;
     thread_handle_create(&threads[i], (thread_routine_t)bundle_miner_mine_routine, &ctxs[i]);
     ctxs[i].was_thread_created = true;
