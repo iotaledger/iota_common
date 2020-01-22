@@ -93,8 +93,8 @@ static void test_bundle_miner_mine(void) {
 
   TEST_ASSERT_EQUAL_FLOAT(0.0, bundle_miner_get_progress_ratio(ctxs, num_ctxs));
 
-  TEST_ASSERT_EQUAL_UINT64(RC_OK, bundle_miner_mine(min, SECURITY, essence, essence_length, 1000000, UINT32_MAX, &index,
-                                                    ctxs, num_ctxs, &found_optimal_index));
+  TEST_ASSERT_EQUAL_UINT64(RC_OK, bundle_miner_mine(min, SECURITY, essence, essence_length, 1000000, UINT32_MAX, false,
+                                                    &index, ctxs, num_ctxs, &found_optimal_index));
 
   TEST_ASSERT_EQUAL_FLOAT(1.0, bundle_miner_get_progress_ratio(ctxs, num_ctxs));
 
