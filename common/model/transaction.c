@@ -296,7 +296,7 @@ size_t transaction_deserialize_from_trits(iota_transaction_t *const transaction,
 void transaction_free(iota_transaction_t *const transaction) { free(transaction); }
 
 void transaction_obj_dump(iota_transaction_t *tx_obj) {
-  field_mask_t old_mask = {};
+  field_mask_t old_mask;
   memcpy(&old_mask, &tx_obj->loaded_columns_mask, sizeof(field_mask_t));
   memset(&tx_obj->loaded_columns_mask, 0xFFFFF, sizeof(field_mask_t));
 
