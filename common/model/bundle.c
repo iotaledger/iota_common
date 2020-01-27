@@ -102,8 +102,13 @@ void bundle_transactions_free(bundle_transactions_t **const bundle) {
   *bundle = NULL;
 }
 
-void bundle_transactions_add(bundle_transactions_t *const bundle, iota_transaction_t const *const transaction) {
+retcode_t bundle_transactions_add(bundle_transactions_t *const bundle, iota_transaction_t const *const transaction) {
+  if (!bundle || !transaction) {
+    return RC_NULL_PARAM;
+  }
+
   utarray_push_back(bundle, transaction);
+  return RC_OK;
 }
 
 void bundle_calculate_hash(bundle_transactions_t *bundle, Kerl *const kerl, flex_trit_t *out) {

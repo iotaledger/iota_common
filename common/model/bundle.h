@@ -70,8 +70,9 @@ void bundle_transactions_free(bundle_transactions_t **const bundle);
  *
  * @param[in] bundle The bundle object.
  * @param[in] transaction A transaction object.
+ * @return #retcode_t
  */
-void bundle_transactions_add(bundle_transactions_t *const bundle, iota_transaction_t const *const transaction);
+retcode_t bundle_transactions_add(bundle_transactions_t *const bundle, iota_transaction_t const *const transaction);
 
 /**
  * @brief Gets a transaction from the bundle by index.
