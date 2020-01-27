@@ -24,3 +24,14 @@ cc_test(
             "@unity",
         ],
 )
+
+cc_test(
+    name = "test_input_validators",
+    timeout = "short",
+    srcs = ["test_input_validators.c"],
+    deps =
+        [
+            "//utils:input_validators",
+            "@unity",
+        ],
+)
