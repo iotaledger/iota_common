@@ -36,4 +36,4 @@ bool is_tag(tryte_t const *const tag) { return is_trytes(tag, NUM_TRYTES_TAG); }
 
 bool is_seed(tryte_t const *const seed) { return is_trytes(seed, NUM_TRYTES_HASH); }
 
-bool is_security_level(int level) { return (level >= 1 && level <= 3); }
+bool is_security_level(uint8_t level) { return (level >= 1 && level <= 3); }

@@ -22,7 +22,7 @@ extern "C" {
 
 /**
  * @brief Checks if given trytes are valid.
- * 
+ *
  * @param[in] trytes A string of trytes.
  * @param[in] len The length of the string.
  * @return boolean

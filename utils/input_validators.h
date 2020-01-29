@@ -69,7 +69,7 @@ bool is_seed(tryte_t const* const seed);
  * @param[in] level An integer.
  * @return boolean
  */
-bool is_security_level(int level);
+bool is_security_level(uint8_t level);
 
 #ifdef __cplusplus
 }

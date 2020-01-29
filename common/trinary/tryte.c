@@ -12,7 +12,7 @@
 bool is_trytes(tryte_t const *const trytes, size_t len) {
   size_t trytes_cnt = strlen((char *)trytes);
   if (trytes_cnt != len) {
-    // length is not matched.
+    // length does not match.
     return false;
   }
 

@@ -20,7 +20,7 @@ extern "C" {
 
 /**
  * @brief Checks if the given trits are valid.
- * 
+ *
  * @param[in] trits A trits array.
  * @param[in] len The length of trits array.
  * @return boolean
