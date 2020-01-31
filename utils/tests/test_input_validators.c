@@ -92,6 +92,30 @@ void test_is_address() {
       false);
 }
 
+void test_is_address_with_checksum() {
+  TEST_ASSERT(
+      is_address_with_checksum(
+          (tryte_t *)"RJBYLCIOUKWJVCUKZQZCPIKNBUOGRGVXHRTTE9ZFSCGTFRKELMJBDDAKEYYCLHLJDNSHQ9RTIUIDLMUOBVG9LXZ9PB") ==
+      true);
+
+  // invalid trytes
+  TEST_ASSERT(
+      is_address_with_checksum(
+          (tryte_t *)"0JBYLCIOUKWJVCUKZQZCPIKNBUOGRGVXHRTTE9ZFSCGTFRKELMJBDDAKEYYCLHLJDNSHQ9RTIUIDLMUOBVG9LXZ9PB") ==
+      false);
+
+  // invalid length
+  TEST_ASSERT(is_address_with_checksum(
+                  (tryte_t *)"RJBYLCIOUKWJVCUKZQZCPIKNBUOGRGVXHRTTE9ZFSCGTFRKELMJBDDAKEYYCLHLJDNSHQ9RTIUIDLMUOB") ==
+              false);
+
+  // without trailing zero
+  TEST_ASSERT(
+      is_address_with_checksum(
+          (tryte_t *)"SH9PTSGXVZULPFFBNDXFKEDVBBQMY9RTHTDELDEYPWBYBQUEFWBBJRPOBWMYLGJE9YGTDFBEJFKNYRKKKVG9LXZ9PB") ==
+      false);
+}
+
 void test_is_security_level() {
   TEST_ASSERT(is_security_level(0) == false);
   TEST_ASSERT(is_security_level(1) == true);
@@ -107,6 +131,7 @@ int main() {
 
   RUN_TEST(test_is_tryte_with_trailing_zero);
   RUN_TEST(test_is_address);
+  RUN_TEST(test_is_address_with_checksum);
   RUN_TEST(test_is_security_level);
 
   return UNITY_END();

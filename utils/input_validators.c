@@ -16,9 +16,6 @@ bool is_tryte_with_trailing_zero(tryte_t const tryte) {
 }
 
 bool is_address(tryte_t const *const address) {
-  if (strlen((char *)address) != NUM_TRYTES_ADDRESS) {
-    return false;
-  }
   if (is_trytes(address, NUM_TRYTES_ADDRESS)) {
     return is_tryte_with_trailing_zero(address[NUM_TRYTES_ADDRESS - 1]);
   }
@@ -26,10 +23,10 @@ bool is_address(tryte_t const *const address) {
 }
 
 bool is_address_with_checksum(tryte_t const *const address) {
-  if (strlen((char *)address) != NUM_TRYTES_ADDRESS + 9) {
-    return false;
+  if (is_trytes(address, NUM_TRYTES_ADDRESS + NUM_TRYTES_CHECKSUM)) {
+    return is_tryte_with_trailing_zero(address[NUM_TRYTES_ADDRESS - 1]);
   }
-  return is_tryte_with_trailing_zero(address[NUM_TRYTES_ADDRESS - 1]);
+  return false;
 }
 
 bool is_tag(tryte_t const *const tag) { return is_trytes(tag, NUM_TRYTES_TAG); }
