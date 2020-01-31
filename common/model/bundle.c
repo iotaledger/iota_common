@@ -95,11 +95,17 @@ static retcode_t validate_signatures(bundle_transactions_t const *const bundle, 
 
 void bundle_transactions_new(bundle_transactions_t **const bundle) { utarray_new(*bundle, &bundle_transactions_icd); }
 
-void bundle_transactions_free(bundle_transactions_t **const bundle) {
+retcode_t bundle_transactions_free(bundle_transactions_t **const bundle) {
+  if (!bundle || !*bundle) {
+    return RC_NULL_PARAM;
+  }
+
   if (bundle && *bundle) {
     utarray_free(*bundle);
   }
   *bundle = NULL;
+
+  return RC_OK;
 }
 
 retcode_t bundle_transactions_add(bundle_transactions_t *const bundle, iota_transaction_t const *const transaction) {
