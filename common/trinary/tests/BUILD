@@ -30,7 +30,7 @@ cc_test(
 )
 
 cc_test(
-    name = "test_tryte",
+    name = "test_trit_tryte",
     timeout = "short",
     srcs = ["test_trit_tryte.c"],
     deps = [
@@ -85,6 +85,26 @@ cc_test(
     srcs = ["test_flex_trit.c"],
     deps = [
         "//common/trinary:flex_trit",
+        "@unity",
+    ],
+)
+
+cc_test(
+    name = "test_trits",
+    timeout = "short",
+    srcs = ["test_trits.c"],
+    deps = [
+        "//common/trinary:trits",
+        "@unity",
+    ],
+)
+
+cc_test(
+    name = "test_tryte",
+    timeout = "short",
+    srcs = ["test_tryte.c"],
+    deps = [
+        "//common/trinary:tryte",
         "@unity",
     ],
 )

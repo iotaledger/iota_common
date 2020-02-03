@@ -115,3 +115,14 @@ cc_library(
     hdrs = ["char_buffer.h"],
     deps = ["//common:errors"],
 )
+
+cc_library(
+    name = "input_validators",
+    srcs = ["input_validators.c"],
+    hdrs = ["input_validators.h"],
+    deps = [
+        "//common/model:transaction",
+        "//common/trinary:trits",
+        "//common/trinary:tryte",
+    ],
+)
