@@ -64,6 +64,7 @@ set(COMMON_SRC
   "${COMMON_TRINARY_DIR}/trit_tryte.c"
   "${COMMON_TRINARY_DIR}/tryte_ascii.c"
   "${COMMON_TRINARY_DIR}/tryte_long.c"
+  "${COMMON_TRINARY_DIR}/tryte.c"
   # curl
   "${COMMON_CRYPTO_DIR}/curl-p/const.c"
   "${COMMON_CRYPTO_DIR}/curl-p/curl_p.c"
@@ -126,6 +127,7 @@ set(UTILS_SRC
   "utils/char_buffer.c"
   "utils/memset_safe.c"
   "utils/system.c"
+  "utils/input_validators.c"
   # hash container
   "${HASH_CONTAINERS_DIR}/hash_array.c"
   "${HASH_CONTAINERS_DIR}/hash27_queue.c"
@@ -227,4 +229,14 @@ if(${TRINARY_TEST})
   add_trinary_test("test_trit_ptrit.c" "test_trinary_trit_ptrit")
   add_trinary_test("test_tryte_ascii.c" "test_trinary_tryte_ascii")
   #add_trinary_test("test_tryte_long.c" "test_trinary_tryte_long")
+
+  function(add_utils_test test_src test_name)
+    add_executable(${test_name} "utils/tests/${test_src}")
+    target_include_directories(${test_name} PUBLIC ${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR})
+    add_dependencies(${test_name} common)
+    target_link_libraries(${test_name} PUBLIC common unity)
+    add_test(${test_name} ${test_name})
+  endfunction(add_utils_test)
+
+  add_utils_test("test_input_validators.c" "test_input_validators")
 endif()
