@@ -52,7 +52,7 @@ void convert_trits_to_bytes(trit_t const *const trits, uint8_t *const bytes) {
   uint32_t *base = (uint32_t *)bytes;
   uint64_t v;
 
-  memset(base, 0, INT_LEN);
+  memset(base, 0, INT_LEN * sizeof(uint32_t));
 
   for (i = 0; i < TRIT_LEN - 1; i++) {
     if (trits[i] != -1) {
