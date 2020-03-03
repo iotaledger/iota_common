@@ -19,29 +19,13 @@
 extern "C" {
 #endif
 
-#if defined(_WIN32)
-
-typedef void (*signal_handle_t)(int);
-
-static inline signal_handle_t signal_handle_register(int sig, signal_handle_t handler) { return signal(sig, handler); }
-
-#elif defined(unix) || defined(__unix) || defined(__unix__)
-
-typedef void (*signal_handle_t)(int);
-
-static inline signal_handle_t signal_handle_register(int sig, signal_handle_t handler) { return signal(sig, handler); }
-
-#elif defined(__APPLE__) || defined(__MACH__)
-
+#ifdef __APPLE__ || __MACH__
 typedef sig_t signal_handle_t;
+#else
+typedef void (*signal_handle_t)(int);
+#endif
 
 static inline signal_handle_t signal_handle_register(int sig, signal_handle_t handler) { return signal(sig, handler); }
-
-#else
-
-#error "No signal primitives found"
-
-#endif
 
 #ifdef __cplusplus
 }

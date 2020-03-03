@@ -8,6 +8,20 @@
 #ifndef __UTILS_HANDLES_COND_H__
 #define __UTILS_HANDLES_COND_H__
 
+#include <stdint.h>
+#ifdef _WIN32
+#include "utils/windows.h"
+#else
+#include <sys/time.h>
+#include <unistd.h>
+#endif
+
+#ifdef _POSIX_THREADS
+#include <pthread.h>
+#endif
+
+#include "utils/handles/lock.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -18,35 +32,101 @@ extern "C" {
  * effect if not needed by the underlying API
  */
 
-#if !defined(_WIN32) && defined(__unix__) || defined(__unix) || (defined(__APPLE__) && defined(__MACH__))
-#include <sys/time.h>
-#include <unistd.h>
-#elif defined(_WIN32)
-#include "utils/windows.h"
+#ifdef _POSIX_THREADS
+typedef pthread_cond_t cond_handle_t;
+#elif _WIN32
+typedef CONDITION_VARIABLE cond_handle_t;
 #endif
 
-#include <stdint.h>
-
-#include "utils/handles/lock.h"
-
+/**
+ * Initializes a condition variable object with the specified attributes for use
+ *
+ * @param[in] cond The condition variable
+ *
+ * @return exit status
+ */
+static inline int cond_handle_init(cond_handle_t* const cond) {
 #ifdef _POSIX_THREADS
-
-#include <pthread.h>
-
-typedef pthread_cond_t cond_handle_t;
-
-static inline int cond_handle_init(cond_handle_t* const cond) { return pthread_cond_init(cond, NULL); }
-
-static inline int cond_handle_signal(cond_handle_t* const cond) { return pthread_cond_signal(cond); }
-
-static inline int cond_handle_broadcast(cond_handle_t* const cond) { return pthread_cond_broadcast(cond); }
-
-static inline int cond_handle_wait(cond_handle_t* const cond, lock_handle_t* const lock) {
-  return pthread_cond_wait(cond, lock);
+  return pthread_cond_init(cond, NULL);
+#elif _WIN32
+  InitializeConditionVariable(cond);
+  return 0;
+#else
+  return 0;
+#endif
 }
 
+/**
+ * Wakes up at least one thread that is currently waiting on the condition
+ * variable specified by cond
+ *
+ * @param[in] cond The condition variable
+ *
+ * @return exit status
+ */
+static inline int cond_handle_signal(cond_handle_t* const cond) {
+#ifdef _POSIX_THREADS
+  return pthread_cond_signal(cond);
+#elif _WIN32
+  WakeConditionVariable(cond);
+  return 0;
+#else
+  return 0;
+#endif
+}
+
+/**
+ * Wakes up all threads that are currently waiting on the condition variable
+ * specified by cond
+ *
+ * @param[in] cond The condition variable
+ *
+ * @return exit status
+ */
+static inline int cond_handle_broadcast(cond_handle_t* const cond) {
+#ifdef _POSIX_THREADS
+  return pthread_cond_broadcast(cond);
+#elif _WIN32
+  WakeAllConditionVariable(cond);
+  return 0;
+#else
+  return 0;
+#endif
+}
+
+/**
+ * Blocks the calling thread, waiting for the condition specified by cond to be
+ * signaled or broadcast to
+ *
+ * @param[in] cond The condition variable
+ * @param[in] lock The associated lock
+ *
+ * @return exit status
+ */
+static inline int cond_handle_wait(cond_handle_t* const cond, lock_handle_t* const lock) {
+#ifdef _POSIX_THREADS
+  return pthread_cond_wait(cond, lock);
+#elif _WIN32
+  SleepConditionVariableCS(cond, lock, INFINITE);
+  return 0;
+#else
+  return 0;
+#endif
+}
+
+/**
+ * Blocks the calling thread, waiting for the condition specified by cond to be
+ * signaled or broadcast to, or until the timeout is reached
+ *
+ * @param[in] cond The condition variable
+ * @param[in] lock The associated lock
+ * @param[in] timeout The timeout in milliseconds
+ *
+ * @return exit status
+ */
 static inline int cond_handle_timedwait(cond_handle_t* const cond, lock_handle_t* const lock,
                                         uint64_t const timeout_ms) {
+#ifdef _POSIX_THREADS
   struct timespec ts;
   struct timeval tv;
 
@@ -59,111 +139,32 @@ static inline int cond_handle_timedwait(cond_handle_t* const cond, lock_handle_t
   }
 
   return pthread_cond_timedwait(cond, lock, &ts);
-}
-
-static inline int cond_handle_destroy(cond_handle_t* const cond) { return pthread_cond_destroy(cond); }
-
-#elif defined(_WIN32)
-
-typedef CONDITION_VARIABLE cond_handle_t;
-
-static inline int cond_handle_init(cond_handle_t* const cond) {
-  InitializeConditionVariable(cond);
-  return 0;
-}
-
-static inline int cond_handle_signal(cond_handle_t* const cond) {
-  WakeConditionVariable(cond);
-  return 0;
-}
-
-static inline int cond_handle_broadcast(cond_handle_t* const cond) {
-  WakeAllConditionVariable(cond);
-  return 0;
-}
-
-static inline int cond_handle_wait(cond_handle_t* const cond, lock_handle_t* const lock) {
-  SleepConditionVariableCS(cond, lock, INFINITE);
-  return 0;
-}
-
-static inline int cond_handle_timedwait(cond_handle_t* const cond, lock_handle_t* const lock,
-                                        uint64_t const timeout_ms) {
+#elif _WIN32
   if (!SleepConditionVariableCS(cond, lock, timeout_ms)) {
     return ETIMEDOUT;
   }
   return 0;
-}
-
-static inline int cond_handle_destroy(cond_handle_t* const cond) { return 0; }
-
 #else
-
-#error "No condition variable primitive found"
-
-#endif  // _POSIX_THREADS
-
-/**
- * Initializes a condition variable object with the specified attributes for use
- *
- * @param cond The condition variable
- *
- * @return exit status
- */
-static inline int cond_handle_init(cond_handle_t* const cond);
-
-/**
- * Wakes up at least one thread that is currently waiting on the condition
- * variable specified by cond
- *
- * @param cond The condition variable
- *
- * @return exit status
- */
-static inline int cond_handle_signal(cond_handle_t* const cond);
-
-/**
- * Wakes up all threads that are currently waiting on the condition variable
- * specified by cond
- *
- * @param cond The condition variable
- *
- * @return exit status
- */
-static inline int cond_handle_broadcast(cond_handle_t* const cond);
-
-/**
- * Blocks the calling thread, waiting for the condition specified by cond to be
- * signaled or broadcast to
- *
- * @param cond The condition variable
- * @param lock The associated lock
- *
- * @return exit status
- */
-static inline int cond_handle_wait(cond_handle_t* const cond, lock_handle_t* const lock);
-
-/**
- * Blocks the calling thread, waiting for the condition specified by cond to be
- * signaled or broadcast to, or until the timeout is reached
- *
- * @param cond The condition variable
- * @param lock The associated lock
- * @param timeout The timeout in milliseconds
- *
- * @return exit status
- */
-static inline int cond_handle_timedwait(cond_handle_t* const cond, lock_handle_t* const lock,
-                                        uint64_t const timeout_ms);
+  return 0;
+#endif
+}
 
 /**
  * Destroys the condition variable specified by cond
  *
- * @param cond The condition variable
+ * @param[in] cond The condition variable
  *
  * @return exit status
  */
-static inline int cond_handle_destroy(cond_handle_t* const cond);
+static inline int cond_handle_destroy(cond_handle_t* const cond) {
+#ifdef _POSIX_THREADS
+  return pthread_cond_destroy(cond);
+#elif _WIN32
+  return 0;
+#else
+  return 0;
+#endif
+}
 
 #ifdef __cplusplus
 }
