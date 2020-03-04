@@ -9,8 +9,8 @@
 #include "utils/windows.h"
 #else
 #include <sys/time.h>
-#if _POSIX_C_SOURCE >= 199309L //IEEE 1003.1b-1993
-#include <time.h>  // for nanosleep
+#if _POSIX_C_SOURCE >= 199309L  // IEEE 1003.1b-1993
+#include <time.h>               // for nanosleep
 #else
 #include <unistd.h>  // for usleep
 #endif
