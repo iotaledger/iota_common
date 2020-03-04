@@ -5,16 +5,15 @@
  * Refer to the LICENSE file for licensing information
  */
 
-#if !defined(_WIN32) && defined(__unix__) || defined(__unix) || \
-    (defined(__APPLE__) && defined(__MACH__) || defined(__XTENSA__))
+#ifdef _WIN32
+#include "utils/windows.h"
+#else
 #include <sys/time.h>
-#if _POSIX_C_SOURCE >= 199309L
+#if _POSIX_C_SOURCE >= 199309L //IEEE 1003.1b-1993
 #include <time.h>  // for nanosleep
 #else
 #include <unistd.h>  // for usleep
 #endif
-#elif defined(_WIN32)
-#include "utils/windows.h"
 #endif
 
 #include "utils/time.h"

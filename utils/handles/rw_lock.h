@@ -80,7 +80,7 @@ static inline int rw_lock_handle_rdlock(rw_lock_handle_t* const lock) {
  */
 static inline int rw_lock_handle_wrlock(rw_lock_handle_t* const lock) {
 #ifdef _POSIX_THREADS
-  pthread_rwlock_wrlock(lock);
+  return pthread_rwlock_wrlock(lock);
 #elif _WIN32
   AcquireSRWLockExclusive(lock);
   return 0;
@@ -98,7 +98,7 @@ static inline int rw_lock_handle_wrlock(rw_lock_handle_t* const lock) {
  */
 static inline int rw_lock_handle_unlock(rw_lock_handle_t* const lock) {
 #ifdef _POSIX_THREADS
-  pthread_rwlock_unlock(lock);
+  return pthread_rwlock_unlock(lock);
 #elif _WIN32
   void* state = *(void**)lock;
 
@@ -122,7 +122,7 @@ static inline int rw_lock_handle_unlock(rw_lock_handle_t* const lock) {
  */
 static inline int rw_lock_handle_destroy(rw_lock_handle_t* const lock) {
 #ifdef _POSIX_THREADS
-  pthread_rwlock_destroy(lock);
+  return pthread_rwlock_destroy(lock);
 #elif _WIN32
   return 0;
 #else

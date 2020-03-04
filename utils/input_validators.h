@@ -10,7 +10,6 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "common/trinary/trits.h"
 #include "common/trinary/tryte.h"
