@@ -120,12 +120,11 @@ done:
                                    (uint32_t)[miningThreshold unsignedIntValue], fullySecure, &cindex, ctxs, num_ctxs,
                                    &found_optimal_index);
 
+  bundle_miner_deallocate_ctxs(&ctxs);
+
   if (rc != RC_OK) {
-    bundle_miner_deallocate_ctxs(&ctxs);
     return @(-1);
   }
-
-  bundle_miner_deallocate_ctxs(&ctxs);
 
   NSNumber* index = [NSNumber numberWithUnsignedLongLong:cindex];
   return index;
