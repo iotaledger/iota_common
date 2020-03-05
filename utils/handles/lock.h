@@ -8,6 +8,16 @@
 #ifndef __UTILS_HANDLES_LOCK_H__
 #define __UTILS_HANDLES_LOCK_H__
 
+#ifdef _WIN32
+#include "utils/windows.h"
+#else
+#include <unistd.h>
+#endif
+
+#ifdef _POSIX_THREADS
+#include <pthread.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -18,88 +28,85 @@ extern "C" {
  * by the underlying API
  */
 
-#if !defined(_WIN32) && defined(__unix__) || defined(__unix) || (defined(__APPLE__) && defined(__MACH__))
-#include <unistd.h>
-#elif defined(_WIN32)
-#include "utils/windows.h"
-#endif
-
 #ifdef _POSIX_THREADS
-
-#include <pthread.h>
-
 typedef pthread_mutex_t lock_handle_t;
-
-static inline int lock_handle_init(lock_handle_t* const lock) { return pthread_mutex_init(lock, NULL); }
-
-static inline int lock_handle_lock(lock_handle_t* const lock) { return pthread_mutex_lock(lock); }
-
-static inline int lock_handle_unlock(lock_handle_t* const lock) { return pthread_mutex_unlock(lock); }
-
-static inline int lock_handle_destroy(lock_handle_t* const lock) { return pthread_mutex_destroy(lock); }
-
-#elif defined(_WIN32)
-
+#elif _WIN32
 typedef CRITICAL_SECTION lock_handle_t;
-
-static inline int lock_handle_init(lock_handle_t* const lock) {
-  InitializeCriticalSection(lock);
-  return 0;
-}
-static inline int lock_handle_lock(lock_handle_t* const lock) {
-  EnterCriticalSection(lock);
-  return 0;
-}
-static inline int lock_handle_unlock(lock_handle_t* const lock) {
-  LeaveCriticalSection(lock);
-  return 0;
-}
-static inline int lock_handle_destroy(lock_handle_t* const lock) {
-  DeleteCriticalSection(lock);
-  return 0;
-}
-
-#else
-
-#error "No lock primitive found"
-
-#endif  // _POSIX_THREADS
+#else  // disable locker
+typedef int lock_handle_t;
+#endif
 
 /**
  * Initializes a lock
  *
- * @param lock The lock
+ * @param[in] lock The lock
  *
  * @return exit status
  */
-static inline int lock_handle_init(lock_handle_t* const lock);
+static inline int lock_handle_init(lock_handle_t* const lock) {
+#ifdef _POSIX_THREADS
+  return pthread_mutex_init(lock, NULL);
+#elif _WIN32
+  InitializeCriticalSection(lock);
+  return 0;
+#else  // disable locker
+  return 0;
+#endif
+}
 
 /**
  * Acquires ownership of the given lock
  *
- * @param lock The lock
+ * @param[in] lock The lock
  *
  * @return exit status
  */
-static inline int lock_handle_lock(lock_handle_t* const lock);
+static inline int lock_handle_lock(lock_handle_t* const lock) {
+#ifdef _POSIX_THREADS
+  return pthread_mutex_lock(lock);
+#elif _WIN32
+  EnterCriticalSection(lock);
+  return 0;
+#else  // disable locker
+  return 0;
+#endif
+}
 
 /**
  * Releases ownership of the given lock
  *
- * @param lock The lock
+ * @param[in] lock The lock
  *
  * @return exit status
  */
-static inline int lock_handle_unlock(lock_handle_t* const lock);
+static inline int lock_handle_unlock(lock_handle_t* const lock) {
+#ifdef _POSIX_THREADS
+  return pthread_mutex_unlock(lock);
+#elif _WIN32
+  LeaveCriticalSection(lock);
+  return 0;
+#else  // disable locker
+  return 0;
+#endif
+}
 
 /**
  * Destroys the lock
  *
- * @param lock The lock
+ * @param[in] lock The lock
  *
  * @return exit status
  */
-static inline int lock_handle_destroy(lock_handle_t* const lock);
+static inline int lock_handle_destroy(lock_handle_t* const lock) {
+#ifdef _POSIX_THREADS
+  return pthread_mutex_destroy(lock);
+#elif _WIN32
+  DeleteCriticalSection(lock);
+  return 0;
+#else  // disable locker
+  return 0;
+#endif
+}
 
 #ifdef __cplusplus
 }
