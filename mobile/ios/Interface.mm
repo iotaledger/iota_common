@@ -109,10 +109,18 @@ done:
 
   byte_t const* cbundleNormalizedMax = (byte_t*)bundleNormalizedMax;
 
+  bundle_miner_ctx_t* ctxs = NULL;
+  size_t num_ctxs = 0;
+  bool found_optimal_index = false;
+
+  bundle_miner_allocate_ctxs((uint8_t)[nprocs unsignedCharValue], &ctxs, &num_ctxs);
+
   retcode_t rc = bundle_miner_mine(cbundleNormalizedMax, (uint8_t)[security unsignedCharValue], (trit_t*)essence,
                                    (size_t)[essenceLength unsignedLongValue], (uint32_t)[count unsignedIntValue],
-                                   (uint8_t)[nprocs unsignedCharValue], (uint32_t)[miningThreshold unsignedIntValue],
-                                   fullySecure, &cindex);
+                                   (uint32_t)[miningThreshold unsignedIntValue], fullySecure, &cindex, ctxs, num_ctxs,
+                                   &found_optimal_index);
+
+  bundle_miner_deallocate_ctxs(&ctxs);
 
   if (rc != RC_OK) {
     return @(-1);

@@ -86,7 +86,9 @@
                                                           essence:essence
                                                     essenceLength:essenceLength
                                                             count:@1000000
-                                                           nprocs:@0];
+                                                           nprocs:@0
+                                                  miningThreshold:@(UINT32_MAX)
+                                                      fullySecure:NO];
   NSLog(@"Calculated bundle index: %@ ", bundleIndex);
   NSDate* endBundleMiner = [NSDate date];
   NSTimeInterval durationBundleMiner = [endBundleMiner timeIntervalSinceDate:startBundleMiner] * 1000;
