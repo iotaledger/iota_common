@@ -8,12 +8,6 @@
 #ifndef __UTILS_MACROS_H__
 #define __UTILS_MACROS_H__
 
-#if defined(_WIN32)
-#include "utils/windows.h"
-#else
-#include <arpa/inet.h>
-#endif
-
 #include <stdint.h>
 
 #ifndef UNUSED

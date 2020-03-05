@@ -35,3 +35,15 @@ cc_test(
             "@unity",
         ],
 )
+
+cc_test(
+    name = "test_handles_lock",
+    timeout = "short",
+    srcs = ["test_handles_lock.c"],
+    deps =
+        [
+            "//utils/handles:lock",
+            "//utils/handles:thread",
+            "@unity",
+        ],
+)
