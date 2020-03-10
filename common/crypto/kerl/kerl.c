@@ -19,7 +19,7 @@
 #define SUFFIX 0x01
 
 void kerl_init(Kerl* const ctx) {
-  uint8_t succ = Keccak_HashInitialize(&ctx->keccak, 832, 768, 384, 0x01) == SUCCESS;
+  uint8_t succ = Keccak_HashInitialize(&ctx->keccak, 832, 768, 384, 0x01) == KECCAK_SUCCESS;
   assert(succ);
   (void)succ;
 }

@@ -8,11 +8,7 @@
 #ifndef __COMMON_CRYPTO_KERL_KERL_H__
 #define __COMMON_CRYPTO_KERL_KERL_H__
 
-#ifdef __XTENSA__
 #include "FIPS202/KeccakHash.h"
-#else
-#include <keccak/KeccakHash.h>
-#endif
 
 #include "common/stdint.h"
 #include "common/trinary/trits.h"
