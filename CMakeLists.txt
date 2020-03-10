@@ -156,6 +156,7 @@ target_include_directories(common PUBLIC
   "${PROJECT_BINARY_DIR}" # looking for generated sources
   #"${PROJECT_BINARY_DIR}/include"
   "${CMAKE_INSTALL_PREFIX}/include"
+  "${CMAKE_INSTALL_PREFIX}/include/keccak"
 )
 
 if(NOT YOCTO)
