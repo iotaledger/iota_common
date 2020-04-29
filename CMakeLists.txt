@@ -22,18 +22,20 @@ option(TRINARY_TEST "Trinary tests" OFF)
 option(ENABLE_ASAN "Enable Address sanitizer" OFF)
 option(BENCH_IOTA_COMMON "IOTA Common benchmarks" OFF)
 
+# Kerl Optimization
+option(KERL_AsmX86_64 "Kerl Optimized AsmX86-64" OFF)
+
 #Trit Encoding flags
 option(TE_1 "Trit encoding 1 trit per byte" OFF)
 option(TE_3 "Trit encoding 3 trits per byte" ON)
 option(TE_4 "Trit encoding 4 trits per byte" OFF)
+option(TE_5 "Trit encoding 5 trits per byte" OFF)
 
 # PCurl configuration flags
 option(PCURL_SBOX_UNWIND_2 "Unwind 2 rounds of PCurl sbox" ON)
 option(PCURL_SBOX_UNWIND_4 "Unwind 4 rounds of PCurl sbox" OFF)
 option(PCURL_SBOX_UNWIND_8 "Unwind 8 rounds of PCurl sbox" OFF)
 option(PCURL_STATE_DOUBLE "Use PCurl double state; PCurl short state optimization is enabled by default" OFF)
-
-option(TE_5 "Trit encoding 5 trits per byte" OFF)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
@@ -258,7 +260,7 @@ if(${TRINARY_TEST})
 
 endif()
 
-if(${BENCH_IOTA_COMMON})
+if(BENCH_IOTA_COMMON)
   # behcnmark address genration and signature signing
   add_executable(bench_sign "common/helpers/benchmark/bench_sign.c")
   target_include_directories(bench_sign PUBLIC ${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR})

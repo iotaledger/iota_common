@@ -4,6 +4,7 @@
 #include <sys/time.h>
 
 #include "common/helpers/sign.h"
+#include "keccak/KeccakP-1600-SnP.h"
 
 #define NUM_OF_TIMES 100
 
@@ -54,12 +55,14 @@ void bench_sign(uint8_t security) {
 }
 
 int main(void) {
-  printf("Bench address generation: %d times\n\t\tmin(ms)\tmax(ms)\tavg(ms)\n", NUM_OF_TIMES);
+  printf("Bench address generation: %d times, Kerl: %s\n\t\tmin(ms)\tmax(ms)\tavg(ms)\n", NUM_OF_TIMES,
+         KeccakP1600_implementation);
   bench_gen_address(1);
   bench_gen_address(2);
   bench_gen_address(3);
 
-  printf("Bench signature signing: %d times\n\t\tmin(ms)\tmax(ms)\tavg(ms)\n", NUM_OF_TIMES);
+  printf("Bench signature signing: %d times, Kerl: %s\n\t\tmin(ms)\tmax(ms)\tavg(ms)\n", NUM_OF_TIMES,
+         KeccakP1600_implementation);
   bench_sign(1);
   bench_sign(2);
   bench_sign(3);

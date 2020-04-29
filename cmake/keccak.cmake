@@ -29,20 +29,33 @@ if (NOT __KECCAK_INCLUDED)
 
   file(WRITE ${keccak_cmake_dir}/CMakeLists.txt
     "cmake_minimum_required(VERSION 3.5)\n"
-    "project(keccak C)\n"
-    "set(my_src ${keccak_src_dir}/lib/low/KeccakP-1600/Reference/KeccakP-1600-reference.c\n"
-    "${keccak_src_dir}/lib/high/Keccak/KeccakSpongeWidth1600.c\n"
+    "project(keccak C ASM)\n"
+    "option(KERL_AsmX86_64 \"Kerl Optimized AsmX86-64\" OFF)\n"
+    "set(my_src ${keccak_src_dir}/lib/high/Keccak/KeccakSpongeWidth1600.c\n"
     "${keccak_src_dir}/lib/high/Keccak/FIPS202/KeccakHash.c)\n"
     "add_library(keccak STATIC \${my_src})\n"
+    "if(KERL_AsmX86_64)\n"
+    "  target_sources(keccak PUBLIC ${keccak_src_dir}/lib/low/KeccakP-1600/OptimizedAsmX86-64/KeccakP-1600-x86-64-gas.s)\n"
+    "else()\n"
+    "  target_sources(keccak PUBLIC ${keccak_src_dir}/lib/low/KeccakP-1600/Reference/KeccakP-1600-reference.c)\n"
+    "endif()\n"
     "target_include_directories(keccak\n"
     "PUBLIC ${keccak_src_dir}/lib/common\n"
-    "PUBLIC ${keccak_src_dir}/lib/low/KeccakP-1600/Reference \n"
     "PUBLIC ${keccak_src_dir}/lib/high/Keccak)\n"
+    "if(KERL_AsmX86_64)\n"
+    "  target_include_directories(keccak PUBLIC ${keccak_src_dir}/lib/low/KeccakP-1600/OptimizedAsmX86-64)\n"
+    "else()\n"
+    "  target_include_directories(keccak PUBLIC ${keccak_src_dir}/lib/low/KeccakP-1600/Reference)\n"
+    "endif()\n"
     "install(TARGETS keccak DESTINATION ${CMAKE_INSTALL_PREFIX}/lib )\n"
     "install(DIRECTORY ${keccak_src_dir}/lib/high/Keccak/FIPS202/ DESTINATION ${keccak_install_include} FILES_MATCHING PATTERN \"*.h\")\n"
     "install(DIRECTORY ${keccak_src_dir}/lib/high/Keccak/ DESTINATION ${keccak_install_include} FILES_MATCHING PATTERN \"*.h\")\n"
     "install(DIRECTORY ${keccak_src_dir}/lib/common/ DESTINATION ${keccak_install_include} FILES_MATCHING PATTERN \"*.h\")\n"
-    "install(DIRECTORY ${keccak_src_dir}/lib/low/KeccakP-1600/Reference/ DESTINATION ${keccak_install_include} FILES_MATCHING PATTERN \"*.h\")\n"
+    "if(KERL_AsmX86_64)\n"
+    "  install(DIRECTORY ${keccak_src_dir}/lib/low/KeccakP-1600/OptimizedAsmX86-64/ DESTINATION ${keccak_install_include} FILES_MATCHING PATTERN \"*.h\")\n"
+    "else()\n"
+    "  install(DIRECTORY ${keccak_src_dir}/lib/low/KeccakP-1600/Reference/ DESTINATION ${keccak_install_include} FILES_MATCHING PATTERN \"*.h\")\n"
+    "endif()\n"
     )
 
   ExternalProject_Add(
@@ -52,6 +65,7 @@ if (NOT __KECCAK_INCLUDED)
     BUILD_IN_SOURCE TRUE
     CMAKE_ARGS
       -DCMAKE_INSTALL_PREFIX:STRING=${CMAKE_INSTALL_PREFIX}
+      -DKERL_AsmX86_64:BOOL=${KERL_AsmX86_64}
     #  -DCMAKE_TOOLCHAIN_FILE:STRING=${CMAKE_TOOLCHAIN_FILE}
     # for debug
     # LOG_CONFIGURE 1
