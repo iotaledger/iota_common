@@ -20,6 +20,7 @@ enable_testing()
 
 option(TRINARY_TEST "Trinary tests" OFF)
 option(ENABLE_ASAN "Enable Address sanitizer" OFF)
+option(BENCH_IOTA_COMMON "IOTA Common benchmarks" OFF)
 
 #Trit Encoding flags
 option(TE_1 "Trit encoding 1 trit per byte" OFF)
@@ -253,6 +254,18 @@ if(${TRINARY_TEST})
   endfunction(add_utils_test)
 
   add_utils_test("test_input_validators.c" "test_input_validators")
+
+
+endif()
+
+if(${BENCH_IOTA_COMMON})
+  # behcnmark address genration and signature signing
+  add_executable(bench_sign "common/helpers/benchmark/bench_sign.c")
+  target_include_directories(bench_sign PUBLIC ${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR})
+  add_dependencies(bench_sign common)
+  target_link_libraries(bench_sign PUBLIC common keccak)
+
+  # TODO add more benchmarks
 endif()
 
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure)
