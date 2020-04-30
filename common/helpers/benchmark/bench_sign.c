@@ -11,6 +11,14 @@
 #include "keccak/SIMD256-config.h"
 #endif
 
+#ifdef KERL_TIMES2
+#include "keccak/KeccakP-1600-times2-SnP.h"
+#elif KERL_TIMES4
+#include "keccak/KeccakP-1600-times4-SnP.h"
+#elif KERL_TIMES8
+#include "keccak/KeccakP-1600-times8-SnP.h"
+#endif
+
 #define NUM_OF_TIMES 100
 
 tryte_t const *const SEED =
@@ -67,6 +75,12 @@ int main(void) {
   printf(", %s\n", KeccakP1600times2_implementation_config);
 #elif KERL_SIMD_TIMES4
   printf(", %s\n", KeccakP1600times4_implementation_config);
+#elif KERL_TIMES2
+  printf(", %s\n", KeccakP1600times2_implementation);
+#elif KERL_TIMES4
+  printf(", %s\n", KeccakP1600times4_implementation);
+#elif KERL_TIMES8
+  printf(", %s\n", KeccakP1600times8_implementation);
 #else
   printf("\n");
 #endif
