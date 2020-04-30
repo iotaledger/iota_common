@@ -22,8 +22,28 @@ option(TRINARY_TEST "Trinary tests" OFF)
 option(ENABLE_ASAN "Enable Address sanitizer" OFF)
 option(BENCH_IOTA_COMMON "IOTA Common benchmarks" OFF)
 
-# Kerl Optimization
-option(KERL_AsmX86_64 "Kerl Optimized AsmX86-64" OFF)
+# Kerl Optimization options
+option(KERL_REF_64 "Kerl reference 64bit" ON)
+option(KERL_REF_32 "Kerl reference 32bit" OFF)
+option(KERL_AsmX86_64 "Kerl optimized AsmX86-64" OFF)
+option(KERL_COMPACT "Kerl minimizing code and memory sizes for 64bit" OFF)
+option(KERL_AVX2 "Kerl with AVX2 instruction set optimization" OFF)
+option(KERL_INPLACE_32 "Kerl minimizing memory sizes for 32bit" OFF)
+# Kerl times 2 SIMD
+option(KERL_SIMD128_SSE2u2 "Kerl SSE2 instruction set, with two rounds unrolled" OFF)
+option(KERL_SIMD128_SSE2uf "Kerl SSE2 instruction set, with all rounds unrolled" OFF)
+# Kerl times 4 SIMD
+option(KERL_SIMD256_AVX2u6 "Kerl AVX2 instruction set, with 6 rounds unrolled" OFF)
+option(KERL_SIMD256_AVX2u12 "Kerl AVX2 instruction set, with 12 rounds unrolled" OFF)
+option(KERL_SIMD256_AVX2uf "Kerl AVX2 instruction set, with all rounds unrolled" OFF)
+
+# Kerl ARM Optimization
+option(KERL_INPLACE_ARMv6M "Kerl minimizing memory sizes for ARMv6M" OFF)
+option(KERL_INPLACE_ARMv7M "Kerl minimizing memory sizes for ARMv7M" OFF)
+option(KERL_INPLACE_ARMv7A "Kerl minimizing memory sizes for ARMv7A" OFF)
+option(KERL_ARMv7A_ASM "Kerl neon optimiaztion for ARMv7A" OFF)
+option(KERL_ARMv8A_ASM "Kerl neon optimiaztion for ARMv8A" OFF)
+
 
 #Trit Encoding flags
 option(TE_1 "Trit encoding 1 trit per byte" OFF)
@@ -261,12 +281,18 @@ if(${TRINARY_TEST})
 endif()
 
 if(BENCH_IOTA_COMMON)
+
   # behcnmark address genration and signature signing
   add_executable(bench_sign "common/helpers/benchmark/bench_sign.c")
   target_include_directories(bench_sign PUBLIC ${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR})
   add_dependencies(bench_sign common)
   target_link_libraries(bench_sign PUBLIC common keccak)
 
+if(KERL_SIMD128_SSE2u2 OR KERL_SIMD128_SSE2uf)
+  target_compile_definitions(bench_sign PRIVATE "-DKERL_SIMD_TIMES2")
+elseif(KERL_SIMD256_AVX2u6 OR KERL_SIMD256_AVX2u12 OR KERL_SIMD256_AVX2uf)
+  target_compile_definitions(bench_sign PRIVATE "-DKERL_SIMD_TIMES4")
+endif()
   # TODO add more benchmarks
 endif()
 

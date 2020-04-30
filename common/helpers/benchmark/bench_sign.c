@@ -5,6 +5,11 @@
 
 #include "common/helpers/sign.h"
 #include "keccak/KeccakP-1600-SnP.h"
+#ifdef KERL_SIMD_TIMES2
+#include "keccak/SIMD128-config.h"
+#elif KERL_SIMD_TIMES4
+#include "keccak/SIMD256-config.h"
+#endif
 
 #define NUM_OF_TIMES 100
 
@@ -32,7 +37,8 @@ void bench_gen_address(uint8_t security) {
     sum += run_time;
     free(tmp_addr);
   }
-  printf("security %d:\t%.3f\t%.3f\t%.3f\n", security, (min / 1000.0), (max / 1000.0), (sum / NUM_OF_TIMES) / 1000.0);
+  printf("security %d:\t%.3f\t%.3f\t%.3f\t%.3f\n", security, (min / 1000.0), (max / 1000.0),
+         (sum / NUM_OF_TIMES) / 1000.0, sum / 1000.0);
 }
 
 void bench_sign(uint8_t security) {
@@ -51,18 +57,26 @@ void bench_sign(uint8_t security) {
     sum += run_time;
     free(tmp_signature);
   }
-  printf("security %d:\t%.3f\t%.3f\t%.3f\n", security, (min / 1000.0), (max / 1000.0), (sum / NUM_OF_TIMES) / 1000.0);
+  printf("security %d:\t%.3f\t%.3f\t%.3f\t%.3f\n", security, (min / 1000.0), (max / 1000.0),
+         (sum / NUM_OF_TIMES) / 1000.0, sum / 1000.0);
 }
 
 int main(void) {
-  printf("Bench address generation: %d times, Kerl: %s\n\t\tmin(ms)\tmax(ms)\tavg(ms)\n", NUM_OF_TIMES,
-         KeccakP1600_implementation);
+  printf("Kerl: %s", KeccakP1600_implementation);
+#if KERL_SIMD_TIMES2
+  printf(", %s\n", KeccakP1600times2_implementation_config);
+#elif KERL_SIMD_TIMES4
+  printf(", %s\n", KeccakP1600times4_implementation_config);
+#else
+  printf("\n");
+#endif
+
+  printf("Bench address generation: %d times\n\t\tmin(ms)\tmax(ms)\tavg(ms)\ttotal(ms)\n", NUM_OF_TIMES);
   bench_gen_address(1);
   bench_gen_address(2);
   bench_gen_address(3);
 
-  printf("Bench signature signing: %d times, Kerl: %s\n\t\tmin(ms)\tmax(ms)\tavg(ms)\n", NUM_OF_TIMES,
-         KeccakP1600_implementation);
+  printf("Bench signature signing: %d times\n\t\tmin(ms)\tmax(ms)\tavg(ms)\ttotal(ms)\n", NUM_OF_TIMES);
   bench_sign(1);
   bench_sign(2);
   bench_sign(3);
