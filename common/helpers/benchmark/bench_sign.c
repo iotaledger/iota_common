@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2020 IOTA Stiftung
+ * https://github.com/iotaledger/iota_common
+ *
+ * Refer to the LICENSE file for licensing information
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
