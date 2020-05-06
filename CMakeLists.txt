@@ -131,7 +131,7 @@ set(COMMON_SRC
 )
 
 set(HASH_CONTAINERS_DIR "utils/containers/hash")
-# genrate hash containers
+# generate hash containers
 file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/${HASH_CONTAINERS_DIR}")
 add_custom_command(
   OUTPUT
@@ -291,26 +291,27 @@ endif()
 
 if(BENCH_IOTA_COMMON)
 
-  # behcnmark address genration and signature signing
+  # benchmark address generation and signature signing
   add_executable(bench_sign "common/helpers/benchmark/bench_sign.c")
   target_include_directories(bench_sign PUBLIC ${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR})
   add_dependencies(bench_sign common)
   target_link_libraries(bench_sign PUBLIC common keccak)
 
-if(KERL_SIMD128_SSE2u2 OR KERL_SIMD128_SSE2uf)
-  target_compile_definitions(bench_sign PRIVATE "-DKERL_SIMD_TIMES2")
-elseif(KERL_SIMD256_AVX2u6 OR KERL_SIMD256_AVX2u12 OR KERL_SIMD256_AVX2uf)
-  target_compile_definitions(bench_sign PRIVATE "-DKERL_SIMD_TIMES4")
-elseif(KERL_T2o1)
-  target_compile_definitions(bench_sign PRIVATE "-DKERL_TIMES2")
-elseif(KERL_T4o1 OR KERL_T4o2)
-  target_compile_definitions(bench_sign PRIVATE "-DKERL_TIMES4")
-elseif(KERL_T8o1 OR KERL_T8o2 OR KERL_T8o4)
-  target_compile_definitions(bench_sign PRIVATE "-DKERL_TIMES8")
-endif()
-  # TODO add more benchmarks
-endif()
+  if(KERL_SIMD128_SSE2u2 OR KERL_SIMD128_SSE2uf)
+    target_compile_definitions(bench_sign PRIVATE "-DKERL_SIMD_TIMES2")
+  elseif(KERL_SIMD256_AVX2u6 OR KERL_SIMD256_AVX2u12 OR KERL_SIMD256_AVX2uf)
+    target_compile_definitions(bench_sign PRIVATE "-DKERL_SIMD_TIMES4")
+  elseif(KERL_T2o1)
+    target_compile_definitions(bench_sign PRIVATE "-DKERL_TIMES2")
+  elseif(KERL_T4o1 OR KERL_T4o2)
+    target_compile_definitions(bench_sign PRIVATE "-DKERL_TIMES4")
+  elseif(KERL_T8o1 OR KERL_T8o2 OR KERL_T8o4)
+    target_compile_definitions(bench_sign PRIVATE "-DKERL_TIMES8")
+  endif()
 
-add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure)
+  add_executable(bench_pow "common/helpers/benchmark/bench_pow.c")
+  target_include_directories(bench_pow PUBLIC ${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR})
+  add_dependencies(bench_pow common)
+  target_link_libraries(bench_pow PUBLIC common)
 
 endif(BENCH_IOTA_COMMON)

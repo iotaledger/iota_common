@@ -9,20 +9,20 @@
 #include <stdlib.h>
 #include <sys/time.h>
 
+#include "KeccakP-1600-SnP.h"
 #include "common/helpers/sign.h"
-#include "keccak/KeccakP-1600-SnP.h"
 #ifdef KERL_SIMD_TIMES2
-#include "keccak/SIMD128-config.h"
+#include "SIMD128-config.h"
 #elif KERL_SIMD_TIMES4
-#include "keccak/SIMD256-config.h"
+#include "SIMD256-config.h"
 #endif
 
 #ifdef KERL_TIMES2
-#include "keccak/KeccakP-1600-times2-SnP.h"
+#include "KeccakP-1600-times2-SnP.h"
 #elif KERL_TIMES4
-#include "keccak/KeccakP-1600-times4-SnP.h"
+#include "KeccakP-1600-times4-SnP.h"
 #elif KERL_TIMES8
-#include "keccak/KeccakP-1600-times8-SnP.h"
+#include "KeccakP-1600-times8-SnP.h"
 #endif
 
 #define NUM_OF_TIMES 100
