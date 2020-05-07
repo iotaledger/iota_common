@@ -11,6 +11,7 @@
 
 #include "common/helpers/digest.h"
 #include "common/helpers/pow.h"
+#include "utils/system.h"
 
 static tryte_t const *const TX_TRYTES = (tryte_t*)
     "XYIUIABLAEBBFCTMDCGPVNCQELHIEBVNRPWBSCABWRAVGVOVMFEHWJCUILYIXOPJNASEOHXP"
@@ -116,6 +117,7 @@ void bench_flex_pow(uint8_t mwm) {
 }
 
 int main(void) {
+  printf("Threads: %zu ", system_cpu_available());
   printf("Bench PoW on Tryes: %d times\n\tmin(ms)\tmax(ms)\tavg(ms)\ttotal(ms)\n", NUM_OF_TIMES);
   bench_pow(9);
   bench_pow(14);

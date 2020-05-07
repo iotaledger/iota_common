@@ -444,3 +444,15 @@ void flex_trit_print(flex_trit_t const *flex_trits, size_t trits_len) {
     flex_trits += chunk_trits_len / NUM_TRITS_PER_FLEX_TRIT;
   }
 }
+
+int flex_trit_encode() {
+#if defined(FLEX_TRIT_ENCODING_1_TRIT_PER_BYTE)
+  return 1;
+#elif defined(FLEX_TRIT_ENCODING_3_TRITS_PER_BYTE)
+  return 3;
+#elif defined(FLEX_TRIT_ENCODING_4_TRITS_PER_BYTE)
+  return 4;
+#elif defined(FLEX_TRIT_ENCODING_5_TRITS_PER_BYTE)
+  return 5;
+#endif
+}
