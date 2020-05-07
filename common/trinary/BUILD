@@ -187,62 +187,15 @@ config_setting(
 
 cc_library(
     name = "flex_trit",
-    deps = select({
-        ":trit_encoding_1": [":flex_trit_1"],
-        ":trit_encoding_3": [":flex_trit_3"],
-        ":trit_encoding_4": [":flex_trit_4"],
-        ":trit_encoding_5": [":flex_trit_5"],
-        "//conditions:default": [":flex_trit_3"],
+    srcs = ["flex_trit.c"],
+    hdrs = ["flex_trit.h"],
+    defines = select({
+        ":trit_encoding_1": ["FLEX_TRIT_ENCODING_1_TRIT_PER_BYTE"],
+        ":trit_encoding_3": ["FLEX_TRIT_ENCODING_3_TRITS_PER_BYTE"],
+        ":trit_encoding_4": ["FLEX_TRIT_ENCODING_4_TRITS_PER_BYTE"],
+        ":trit_encoding_5": ["FLEX_TRIT_ENCODING_3_TRITS_PER_BYTE"],
+        "//conditions:default": ["FLEX_TRIT_ENCODING_3_TRITS_PER_BYTE"],
     }),
-)
-
-cc_library(
-    name = "flex_trit_1",
-    srcs = ["flex_trit.c"],
-    hdrs = ["flex_trit.h"],
-    defines = ["FLEX_TRIT_ENCODING_1_TRIT_PER_BYTE"],
-    deps = [
-        ":trit_byte",
-        ":trit_tryte",
-        ":trits",
-        "//common:stdint",
-        "//utils:macros",
-    ],
-)
-
-cc_library(
-    name = "flex_trit_3",
-    srcs = ["flex_trit.c"],
-    hdrs = ["flex_trit.h"],
-    defines = ["FLEX_TRIT_ENCODING_3_TRITS_PER_BYTE"],
-    deps = [
-        ":trit_byte",
-        ":trit_tryte",
-        ":trits",
-        "//common:stdint",
-        "//utils:macros",
-    ],
-)
-
-cc_library(
-    name = "flex_trit_4",
-    srcs = ["flex_trit.c"],
-    hdrs = ["flex_trit.h"],
-    defines = ["FLEX_TRIT_ENCODING_4_TRITS_PER_BYTE"],
-    deps = [
-        ":trit_byte",
-        ":trit_tryte",
-        ":trits",
-        "//common:stdint",
-        "//utils:macros",
-    ],
-)
-
-cc_library(
-    name = "flex_trit_5",
-    srcs = ["flex_trit.c"],
-    hdrs = ["flex_trit.h"],
-    defines = ["FLEX_TRIT_ENCODING_5_TRITS_PER_BYTE"],
     deps = [
         ":trit_byte",
         ":trit_tryte",
