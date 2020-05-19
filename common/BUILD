@@ -19,3 +19,8 @@ cc_library(
     name = "stdint",
     hdrs = ["stdint.h"],
 )
+
+cc_library(
+    name = "version",
+    hdrs = ["version.h"],
+)
