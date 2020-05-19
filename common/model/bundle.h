@@ -177,7 +177,7 @@ retcode_t bundle_sign(bundle_transactions_t *const bundle, flex_trit_t const *co
 /**
  * @brief Gets message string from a bundle
  *
- * @param bundle A bundle object
+ * @param[in] bundle A bundle object
  * @return char* A pointer to the message, free() is needed by the caller.
  */
 char *bundle_get_message_string(bundle_transactions_t *bundle);
@@ -185,7 +185,7 @@ char *bundle_get_message_string(bundle_transactions_t *bundle);
 /**
  * @brief Print transactions in the bundle on console.
  *
- * @param bundle A bundle object.
+ * @param[in] bundle A bundle object.
  */
 void bundle_dump(bundle_transactions_t *bundle);
 

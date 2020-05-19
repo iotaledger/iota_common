@@ -99,8 +99,8 @@ static retcode_t validate_signatures(bundle_transactions_t const *const bundle, 
 /**
  * @brief Sets message to a bundle using signature_fragments_t
  *
- * @param bundle A bundle object
- * @param messages The message fragments
+ * @param[in] bundle A bundle object
+ * @param[in] messages The message fragments
  */
 static void bundle_set_messages(bundle_transactions_t *bundle, signature_fragments_t *messages) {
   iota_transaction_t *tx = NULL;
