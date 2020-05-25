@@ -18,7 +18,6 @@ endif()
 enable_language(C)
 enable_testing()
 
-option(YOCTO "Enable Building in Yocto" OFF)
 option(TRINARY_TEST "Trinary tests" OFF)
 
 #Trit Encoding flags
@@ -37,19 +36,17 @@ option(TE_5 "Trit encoding 5 trits per byte" OFF)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
-if(NOT YOCTO)
-  include(ExternalProject)
+include(ExternalProject)
 
-  # libs in the sandbox
-  #link_directories("${PROJECT_BINARY_DIR}/lib")
-  link_directories("${CMAKE_INSTALL_PREFIX}/lib")
+# libs in the sandbox
+#link_directories("${PROJECT_BINARY_DIR}/lib")
+link_directories("${CMAKE_INSTALL_PREFIX}/lib")
 
-  # external libs
-  include(cmake/embear_logger.cmake)
-  include(cmake/keccak.cmake)
-  include(cmake/unity.cmake)
-  include(cmake/uthash.cmake)
-endif()
+# external libs
+include(cmake/embear_logger.cmake)
+include(cmake/keccak.cmake)
+include(cmake/unity.cmake)
+include(cmake/uthash.cmake)
 
 set(COMMON_TRINARY_DIR "common/trinary")
 set(COMMON_CRYPTO_DIR "common/crypto")
@@ -159,13 +156,11 @@ target_include_directories(common PUBLIC
   "${CMAKE_INSTALL_PREFIX}/include/keccak"
 )
 
-if(NOT YOCTO)
-  add_dependencies(common
-    ext_uthash
-    ext_keccak
-    ext_embear_logger
-  )
-endif()
+add_dependencies(common
+  ext_uthash
+  ext_keccak
+  ext_embear_logger
+)
 
 target_link_libraries(common PUBLIC 
   Threads::Threads
