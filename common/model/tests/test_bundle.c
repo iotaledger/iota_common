@@ -51,61 +51,17 @@ void test_normalized_bundle(void) {
   TEST_ASSERT_EQUAL_MEMORY(bytes, normalized_bundle_bytes, length);
 }
 
-static void message_to_bundle(bundle_transactions_t *bundle, char const *const str_msg) {
-  // converting ascii string to trytes string
-  size_t trytes_msg_len = strlen(str_msg) * 2;
-  tryte_t trytes_msg[trytes_msg_len + 1];
-  ascii_to_trytes(str_msg, trytes_msg);
-  trytes_msg[trytes_msg_len] = '\0';  // null terminator is needed.
-
-  // apply trytes string to bundle
-  iota_transaction_t tx = {};
-  tryte_t msg_buff[NUM_TRYTES_MESSAGE + 1] = {};
-  size_t msg_chunks = floor((double)trytes_msg_len / NUM_TRYTES_MESSAGE) + 1;
-  signature_fragments_t *sign_fragments = signature_fragments_new();
-  size_t last_chunk = 0;
-  transaction_reset(&tx);
-
-  for (size_t i = 0; i < (msg_chunks * NUM_TRYTES_MESSAGE); i += NUM_TRYTES_MESSAGE) {
-    if (i + NUM_TRYTES_MESSAGE > trytes_msg_len) {
-      last_chunk = trytes_msg_len - ((msg_chunks - 1) * NUM_TRYTES_MESSAGE);
-      strncpy((char *)msg_buff, (char *)trytes_msg + i, last_chunk);
-      msg_buff[last_chunk] = '\0';
-    } else {
-      strncpy((char *)msg_buff, (char *)trytes_msg + i, NUM_TRYTES_MESSAGE);
-      msg_buff[NUM_TRYTES_MESSAGE] = '\0';
-    }
-
-    signature_fragments_add(sign_fragments, msg_buff);
-    bundle_transactions_add(bundle, &tx);
-  }
-
-  bundle_set_messages(bundle, sign_fragments);
-  signature_fragments_free(sign_fragments);
-}
-
 static void test_bundle_message(char const *const message) {
   // applying message to a bundle
   bundle_transactions_t *bundle = NULL;
   bundle_transactions_new(&bundle);
-  message_to_bundle(bundle, message);
+  bundle_set_message_string(bundle, message);
 
-  // extracting bundle message
-  iota_transaction_t *curr_tx = NULL;
-  size_t trytes_buff_size = NUM_TRYTES_MESSAGE * bundle_transactions_size(bundle);
-  tryte_t trytes_buff[trytes_buff_size + trytes_buff_size % 2];
-  size_t index = 0;
-  BUNDLE_FOREACH(bundle, curr_tx) {
-    flex_trits_to_trytes(trytes_buff + (index * NUM_TRYTES_MESSAGE), NUM_TRYTES_MESSAGE, transaction_message(curr_tx),
-                         NUM_TRITS_MESSAGE, NUM_TRITS_MESSAGE);
-    index++;
-  }
+  // extracting the message
+  char *bundle_msg = bundle_get_message_string(bundle);
+  TEST_ASSERT_EQUAL_MEMORY(message, bundle_msg, strlen((char *)message));
 
-  // trytes to string
-  char str_buff[trytes_buff_size / 2 + trytes_buff_size % 2];
-  trytes_to_ascii(trytes_buff, trytes_buff_size, str_buff);
-
-  TEST_ASSERT_EQUAL_MEMORY(message, str_buff, strlen((char *)message));
+  free(bundle_msg);
   bundle_transactions_free(&bundle);
 }
 

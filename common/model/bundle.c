@@ -5,10 +5,13 @@
  * Refer to the LICENSE file for licensing information
  */
 
-#include "common/model/bundle.h"
+#include <math.h>
+
 #include "common/crypto/iss/v1/iss_kerl.h"
 #include "common/helpers/sign.h"
+#include "common/model/bundle.h"
 #include "common/trinary/trit_long.h"
+#include "common/trinary/tryte_ascii.h"
 #include "common/trinary/tryte_long.h"
 
 static UT_icd bundle_transactions_icd = {sizeof(iota_transaction_t), 0, 0, 0};
@@ -91,6 +94,31 @@ static retcode_t validate_signatures(bundle_transactions_t const *const bundle, 
   }
 
   return RC_OK;
+}
+
+/**
+ * @brief Sets message to a bundle using signature_fragments_t
+ *
+ * @param[in] bundle A bundle object
+ * @param[in] messages The message fragments
+ */
+static void bundle_set_messages(bundle_transactions_t *bundle, signature_fragments_t *messages) {
+  iota_transaction_t *tx = NULL;
+  size_t index = 0;
+  tryte_t **msg = NULL;
+  size_t msg_len = 0;
+
+  BUNDLE_FOREACH(bundle, tx) {
+    msg = signature_fragments_at(messages, index);
+    if (msg == NULL) {
+      break;
+    }
+    msg_len = strlen((char *)*msg);
+    // trytes to flex_trits
+    flex_trits_from_trytes(tx->data.signature_or_message, NUM_TRITS_SIGNATURE, *msg, NUM_TRYTES_SIGNATURE, msg_len);
+    tx->loaded_columns_mask.data |= MASK_DATA_SIG_OR_MSG;
+    index++;
+  }
 }
 
 void bundle_transactions_new(bundle_transactions_t **const bundle) { utarray_new(*bundle, &bundle_transactions_icd); }
@@ -275,23 +303,39 @@ void bundle_reset_indexes(bundle_transactions_t *const bundle) {
   }
 }
 
-void bundle_set_messages(bundle_transactions_t *bundle, signature_fragments_t *messages) {
-  iota_transaction_t *tx = NULL;
-  size_t index = 0;
-  tryte_t **msg = NULL;
-  size_t msg_len = 0;
+void bundle_set_message_string(bundle_transactions_t *bundle, char const *const msg) {
+  // converting ascii string to trytes string
+  size_t trytes_msg_len = strlen(msg) * 2;
+  tryte_t *trytes_msg = malloc(sizeof(tryte_t) * (trytes_msg_len + 1));
+  ascii_to_trytes(msg, trytes_msg);
+  trytes_msg[trytes_msg_len] = '\0';  // null terminator is needed.
 
-  BUNDLE_FOREACH(bundle, tx) {
-    msg = signature_fragments_at(messages, index);
-    if (msg == NULL) {
-      break;
+  // apply trytes string to bundle
+  iota_transaction_t tx = {};
+  tryte_t *msg_buff = malloc(sizeof(tryte_t) * (NUM_TRYTES_MESSAGE + 1));
+  size_t msg_chunks = floor((double)trytes_msg_len / NUM_TRYTES_MESSAGE) + 1;
+  signature_fragments_t *sign_fragments = signature_fragments_new();
+  size_t last_chunk = 0;
+  transaction_reset(&tx);
+
+  for (size_t i = 0; i < (msg_chunks * NUM_TRYTES_MESSAGE); i += NUM_TRYTES_MESSAGE) {
+    if (i + NUM_TRYTES_MESSAGE > trytes_msg_len) {
+      last_chunk = trytes_msg_len - ((msg_chunks - 1) * NUM_TRYTES_MESSAGE);
+      strncpy((char *)msg_buff, (char *)trytes_msg + i, last_chunk);
+      msg_buff[last_chunk] = '\0';
+    } else {
+      strncpy((char *)msg_buff, (char *)trytes_msg + i, NUM_TRYTES_MESSAGE);
+      msg_buff[NUM_TRYTES_MESSAGE] = '\0';
     }
-    msg_len = strlen((char *)*msg);
-    // trytes to flex_trits
-    flex_trits_from_trytes(tx->data.signature_or_message, NUM_TRITS_SIGNATURE, *msg, NUM_TRYTES_SIGNATURE, msg_len);
-    tx->loaded_columns_mask.data |= MASK_DATA_SIG_OR_MSG;
-    index++;
+
+    signature_fragments_add(sign_fragments, msg_buff);
+    bundle_transactions_add(bundle, &tx);
   }
+
+  bundle_set_messages(bundle, sign_fragments);
+  signature_fragments_free(sign_fragments);
+  free(trytes_msg);
+  free(msg_buff);
 }
 
 retcode_t bundle_sign(bundle_transactions_t *const bundle, flex_trit_t const *const seed, inputs_t const *const inputs,
@@ -336,6 +380,26 @@ retcode_t bundle_sign(bundle_transactions_t *const bundle, flex_trit_t const *co
   }
   bundle_reset_indexes(bundle);
   return RC_OK;
+}
+
+char *bundle_get_message_string(bundle_transactions_t *bundle) {
+  // extracting bundle message
+  iota_transaction_t *curr_tx = NULL;
+  size_t trytes_buff_size = NUM_TRYTES_MESSAGE * bundle_transactions_size(bundle);
+  tryte_t *trytes_buff = malloc(sizeof(tryte_t) * trytes_buff_size + trytes_buff_size % 2);
+  size_t index = 0;
+  BUNDLE_FOREACH(bundle, curr_tx) {
+    flex_trits_to_trytes(trytes_buff + (index * NUM_TRYTES_MESSAGE), NUM_TRYTES_MESSAGE, transaction_message(curr_tx),
+                         NUM_TRITS_MESSAGE, NUM_TRITS_MESSAGE);
+    index++;
+  }
+
+  // trytes to string
+  char *msg = malloc(sizeof(char) * (trytes_buff_size / 2 + trytes_buff_size % 2));
+  trytes_to_ascii(trytes_buff, trytes_buff_size, msg);
+
+  free(trytes_buff);
+  return msg;
 }
 
 void bundle_dump(bundle_transactions_t *bundle) {
