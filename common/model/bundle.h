@@ -155,12 +155,12 @@ retcode_t bundle_validate(bundle_transactions_t *const bundle, bundle_status_t *
 void bundle_reset_indexes(bundle_transactions_t *const bundle);
 
 /**
- * @brief Sets bundle message.
+ * @brief Sets message to a bundle
  *
- * @param[in] bundle A bundle object.
- * @param[in] messages A message for the bundle.
+ * @param bundle A bundle object
+ * @param msg A message string
  */
-void bundle_set_messages(bundle_transactions_t *bundle, signature_fragments_t *messages);
+void bundle_set_message_string(bundle_transactions_t *bundle, char const *const msg);
 
 /**
  * @brief Adds signature to transactions in a bundle.
@@ -174,6 +174,19 @@ void bundle_set_messages(bundle_transactions_t *bundle, signature_fragments_t *m
 retcode_t bundle_sign(bundle_transactions_t *const bundle, flex_trit_t const *const seed, inputs_t const *const inputs,
                       Kerl *const kerl);
 
+/**
+ * @brief Gets message string from a bundle
+ *
+ * @param[in] bundle A bundle object
+ * @return char* A pointer to the message, free() is needed by the caller.
+ */
+char *bundle_get_message_string(bundle_transactions_t *bundle);
+
+/**
+ * @brief Print transactions in the bundle on console.
+ *
+ * @param[in] bundle A bundle object.
+ */
 void bundle_dump(bundle_transactions_t *bundle);
 
 /**

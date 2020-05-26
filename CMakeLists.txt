@@ -19,6 +19,7 @@ enable_language(C)
 enable_testing()
 
 option(TRINARY_TEST "Trinary tests" OFF)
+option(ENABLE_ASAN "Enable Address sanitizer" OFF)
 
 #Trit Encoding flags
 option(TE_1 "Trit encoding 1 trit per byte" OFF)
@@ -47,6 +48,10 @@ include(cmake/embear_logger.cmake)
 include(cmake/keccak.cmake)
 include(cmake/unity.cmake)
 include(cmake/uthash.cmake)
+
+if(ENABLE_ASAN AND TRINARY_TEST)
+  include(cmake/asan.cmake)
+endif()
 
 set(COMMON_TRINARY_DIR "common/trinary")
 set(COMMON_CRYPTO_DIR "common/crypto")
@@ -162,6 +167,10 @@ add_dependencies(common
   ext_embear_logger
 )
 
+if(HAS_ASAN_ENABLED)
+  target_link_libraries(common PUBLIC asan)
+endif()
+
 target_link_libraries(common PUBLIC 
   Threads::Threads
   keccak
@@ -219,6 +228,9 @@ if(${TRINARY_TEST})
     #endif()
     target_include_directories(${test_name} PUBLIC ${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR})
     add_dependencies(${test_name} common)
+    if(HAS_ASAN_ENABLED)
+      target_link_libraries(${test_name} PRIVATE asan)
+    endif()
     target_link_libraries(${test_name} PUBLIC common unity)
     add_test(${test_name} ${test_name})
   endfunction(add_trinary_test)
@@ -242,3 +254,5 @@ if(${TRINARY_TEST})
 
   add_utils_test("test_input_validators.c" "test_input_validators")
 endif()
+
+add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure)
