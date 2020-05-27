@@ -53,6 +53,8 @@ option(KERL_INPLACE_ARMv7A "Kerl minimizing memory sizes for ARMv7A" OFF)
 option(KERL_ARMv7A_ASM "Kerl neon optimiaztion for ARMv7A" OFF)
 option(KERL_ARMv8A_ASM "Kerl neon optimiaztion for ARMv8A" OFF)
 
+# ON for POXIS system, OFF for microcontrollers
+option(USE_EMBEAR_LOGGER "Use embera logger" ON)
 
 #Trit Encoding flags
 option(TE_1 "Trit encoding 1 trit per byte" OFF)
@@ -76,7 +78,10 @@ include(ExternalProject)
 link_directories("${CMAKE_INSTALL_PREFIX}/lib")
 
 # external libs
+if(USE_EMBEAR_LOGGER)
 include(cmake/embear_logger.cmake)
+endif()
+
 include(cmake/keccak.cmake)
 include(cmake/unity.cmake)
 include(cmake/uthash.cmake)
@@ -196,8 +201,11 @@ target_include_directories(common PUBLIC
 add_dependencies(common
   ext_uthash
   ext_keccak
-  ext_embear_logger
 )
+
+if(USE_EMBEAR_LOGGER)
+add_dependencies(common ext_embear_logger)
+endif()
 
 if(HAS_ASAN_ENABLED)
   target_link_libraries(common PUBLIC asan)
@@ -205,8 +213,11 @@ endif()
 
 target_link_libraries(common PUBLIC 
   Threads::Threads
-  keccak
-  logger)
+  keccak)
+
+if(USE_EMBEAR_LOGGER)
+target_link_libraries(common PUBLIC logger)
+endif()
 
 # install
 install(TARGETS common DESTINATION "${CMAKE_INSTALL_PREFIX}/lib")
@@ -245,6 +256,11 @@ else()
   target_compile_definitions(common PRIVATE "-DPCURL_STATE_SHORT")
 endif()
 
+if(USE_EMBEAR_LOGGER)
+  target_compile_definitions(common PUBLIC "-DUSE_EMBEAR_LOGGER")
+  target_compile_definitions(common PUBLIC "-DLOGGER_ENABLE")
+endif()
+
 #if(${RPI_CROSS_COMPILATION})
 #  set_property(TARGET common PROPERTY C_STANDARD 99)
 #endif()
@@ -281,12 +297,14 @@ if(${TRINARY_TEST})
     target_include_directories(${test_name} PUBLIC ${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR})
     add_dependencies(${test_name} common)
     target_link_libraries(${test_name} PUBLIC common unity)
+    if(USE_EMBEAR_LOGGER)
+      target_link_libraries(common PUBLIC logger)
+    endif()
     add_test(${test_name} ${test_name})
   endfunction(add_utils_test)
 
   add_utils_test("test_input_validators.c" "test_input_validators")
-
-
+  add_utils_test("test_logger.c" "test_logger")
 endif()
 
 if(BENCH_IOTA_COMMON)
