@@ -120,7 +120,7 @@ int main(void) {
   bench_gen_address(3);
 
   printf("Bench flex address generation: %d times, %d trits per byte\n\t\tmin(ms)\tmax(ms)\tavg(ms)\ttotal(ms)\n",
-         NUM_OF_TIMES, flex_trit_encode());
+         NUM_OF_TIMES, flex_trit_encoding());
   bench_gen_flex_address(1);
   bench_gen_address(2);
   bench_gen_address(3);

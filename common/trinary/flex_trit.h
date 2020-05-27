@@ -277,7 +277,7 @@ void flex_trit_print(flex_trit_t const *trits, size_t trits_len);
  *
  * @return int
  */
-int flex_trit_encode();
+int flex_trit_encoding();
 
 #endif
 #ifdef __cplusplus

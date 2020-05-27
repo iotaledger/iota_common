@@ -445,7 +445,7 @@ void flex_trit_print(flex_trit_t const *flex_trits, size_t trits_len) {
   }
 }
 
-int flex_trit_encode() {
+int flex_trit_encoding() {
 #if defined(FLEX_TRIT_ENCODING_1_TRIT_PER_BYTE)
   return 1;
 #elif defined(FLEX_TRIT_ENCODING_3_TRITS_PER_BYTE)
