@@ -20,19 +20,51 @@ enable_testing()
 
 option(TRINARY_TEST "Trinary tests" OFF)
 option(ENABLE_ASAN "Enable Address sanitizer" OFF)
+option(BENCH_IOTA_COMMON "IOTA Common benchmarks" OFF)
+
+# Kerl Optimization options
+option(KERL_REF_64 "Kerl reference 64bit" ON)
+option(KERL_REF_32 "Kerl reference 32bit" OFF)
+option(KERL_AsmX86_64 "Kerl optimized AsmX86-64" OFF)
+option(KERL_COMPACT "Kerl minimizing code and memory sizes for 64bit" OFF)
+option(KERL_AVX2 "Kerl with AVX2 instruction set optimization" OFF)
+option(KERL_INPLACE_32 "Kerl minimizing memory sizes for 32bit" OFF)
+option(KERL_64u6 "Kerl for 64-bit platforms with 6 rounds unrolled" OFF)
+option(KERL_64uf "Kerl for 64-bit platforms with full rounds unrolled" OFF)
+option(KERL_T2o1 "Kerl calls Keccak-p[1600] twice" OFF)
+option(KERL_T4o1 "Kerl calls Keccak-p[1600] four times" OFF)
+option(KERL_T8o1 "Kerl calls Keccak-p[1600] eight times" OFF)
+option(KERL_T4o2 "Kerl calls Keccak-p[1600]x2 twice" OFF)
+option(KERL_T8o2 "Kerl calls Keccak-p[1600]x2 four times" OFF)
+option(KERL_T8o4 "Kerl calls Keccak-p[1600]x4 twice" OFF)
+
+# Kerl times 2 SIMD
+option(KERL_SIMD128_SSE2u2 "Kerl SSE2 instruction set, with two rounds unrolled" OFF)
+option(KERL_SIMD128_SSE2uf "Kerl SSE2 instruction set, with all rounds unrolled" OFF)
+# Kerl times 4 SIMD
+option(KERL_SIMD256_AVX2u6 "Kerl AVX2 instruction set, with 6 rounds unrolled" OFF)
+option(KERL_SIMD256_AVX2u12 "Kerl AVX2 instruction set, with 12 rounds unrolled" OFF)
+option(KERL_SIMD256_AVX2uf "Kerl AVX2 instruction set, with all rounds unrolled" OFF)
+
+# Kerl ARM Optimization
+option(KERL_INPLACE_ARMv6M "Kerl minimizing memory sizes for ARMv6M" OFF)
+option(KERL_INPLACE_ARMv7M "Kerl minimizing memory sizes for ARMv7M" OFF)
+option(KERL_INPLACE_ARMv7A "Kerl minimizing memory sizes for ARMv7A" OFF)
+option(KERL_ARMv7A_ASM "Kerl neon optimiaztion for ARMv7A" OFF)
+option(KERL_ARMv8A_ASM "Kerl neon optimiaztion for ARMv8A" OFF)
+
 
 #Trit Encoding flags
 option(TE_1 "Trit encoding 1 trit per byte" OFF)
 option(TE_3 "Trit encoding 3 trits per byte" ON)
 option(TE_4 "Trit encoding 4 trits per byte" OFF)
+option(TE_5 "Trit encoding 5 trits per byte" OFF)
 
 # PCurl configuration flags
 option(PCURL_SBOX_UNWIND_2 "Unwind 2 rounds of PCurl sbox" ON)
 option(PCURL_SBOX_UNWIND_4 "Unwind 4 rounds of PCurl sbox" OFF)
 option(PCURL_SBOX_UNWIND_8 "Unwind 8 rounds of PCurl sbox" OFF)
 option(PCURL_STATE_DOUBLE "Use PCurl double state; PCurl short state optimization is enabled by default" OFF)
-
-option(TE_5 "Trit encoding 5 trits per byte" OFF)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
@@ -99,7 +131,7 @@ set(COMMON_SRC
 )
 
 set(HASH_CONTAINERS_DIR "utils/containers/hash")
-# genrate hash containers
+# generate hash containers
 file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/${HASH_CONTAINERS_DIR}")
 add_custom_command(
   OUTPUT
@@ -253,6 +285,33 @@ if(${TRINARY_TEST})
   endfunction(add_utils_test)
 
   add_utils_test("test_input_validators.c" "test_input_validators")
+
+
 endif()
 
-add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure)
+if(BENCH_IOTA_COMMON)
+
+  # benchmark address generation and signature signing
+  add_executable(bench_sign "common/helpers/benchmark/bench_sign.c")
+  target_include_directories(bench_sign PUBLIC ${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR})
+  add_dependencies(bench_sign common)
+  target_link_libraries(bench_sign PUBLIC common keccak)
+
+  if(KERL_SIMD128_SSE2u2 OR KERL_SIMD128_SSE2uf)
+    target_compile_definitions(bench_sign PRIVATE "-DKERL_SIMD_TIMES2")
+  elseif(KERL_SIMD256_AVX2u6 OR KERL_SIMD256_AVX2u12 OR KERL_SIMD256_AVX2uf)
+    target_compile_definitions(bench_sign PRIVATE "-DKERL_SIMD_TIMES4")
+  elseif(KERL_T2o1)
+    target_compile_definitions(bench_sign PRIVATE "-DKERL_TIMES2")
+  elseif(KERL_T4o1 OR KERL_T4o2)
+    target_compile_definitions(bench_sign PRIVATE "-DKERL_TIMES4")
+  elseif(KERL_T8o1 OR KERL_T8o2 OR KERL_T8o4)
+    target_compile_definitions(bench_sign PRIVATE "-DKERL_TIMES8")
+  endif()
+
+  add_executable(bench_pow "common/helpers/benchmark/bench_pow.c")
+  target_include_directories(bench_pow PUBLIC ${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR})
+  add_dependencies(bench_pow common)
+  target_link_libraries(bench_pow PUBLIC common)
+
+endif(BENCH_IOTA_COMMON)

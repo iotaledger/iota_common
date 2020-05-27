@@ -266,6 +266,19 @@ size_t flex_trits_from_bytes(flex_trit_t *to_flex_trits, size_t to_len, const by
  */
 void flex_trit_print(flex_trit_t const *trits, size_t trits_len);
 
+/**
+ * @brief Gets encoding type of flex_trit
+ *
+ * encoding type
+ * 1 trit per byte
+ * 3 trits per byte
+ * 4 trits per byte
+ * 5 trits per byte
+ *
+ * @return int
+ */
+int flex_trit_encoding();
+
 #endif
 #ifdef __cplusplus
 }
