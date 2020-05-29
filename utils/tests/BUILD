@@ -47,3 +47,14 @@ cc_test(
             "@unity",
         ],
 )
+
+cc_test(
+    name = "test_logger",
+    timeout = "short",
+    srcs = ["test_logger.c"],
+    deps =
+        [
+            "//utils:logger_helper",
+            "@unity",
+        ],
+)
