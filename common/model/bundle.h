@@ -163,6 +163,14 @@ void bundle_reset_indexes(bundle_transactions_t *const bundle);
 void bundle_set_message_string(bundle_transactions_t *bundle, char const *const msg);
 
 /**
+ * @brief Sets message to a bundle using signature_fragments_t
+ *
+ * @param[in] bundle A bundle object
+ * @param[in] messages The message fragments
+ */
+void bundle_set_message_fragment(bundle_transactions_t *bundle, signature_fragments_t *messages);
+
+/**
  * @brief Adds signature to transactions in a bundle.
  *
  * @param[in] bundle A bundle object.
