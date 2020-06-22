@@ -1,0 +1,82 @@
+name: Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up env
+      run: |
+        sudo apt update
+        sudo apt install -y cppcheck
+  
+    - name: Install buildifier
+      run: |
+        sudo wget -q https://github.com/bazelbuild/buildtools/releases/download/0.29.0/buildifier -O /usr/local/bin/buildifier
+        sudo chmod +x /usr/local/bin/buildifier
+
+    - name: Coding style check
+      run: ./tools/ci_format_check common utils
+
+    - name: Buildifier check
+      run: ./tools/ci_buildifier_check
+
+    - name: Static analysis check
+      run: cppcheck --force --error-exitcode=1 -q common utils
+
+    - name: TE=1 bazel test opt ASAN
+      run: bazel test --build_tests_only -c opt --test_output=all --config asan --define trit_encoding=1 -- //... -//mobile/ios/...
+
+    - name: TE=1 bazel test dbg ASAN
+      run: bazel test --build_tests_only -c dbg --test_output=all --config asan --define trit_encoding=1 -- //... -//mobile/ios/...
+
+    - name: TE=1 bazel test opt TSAN
+      run: bazel test --build_tests_only -c opt --test_output=all --config tsan --define trit_encoding=1 -- //... -//mobile/...
+
+    - name: TE=1 bazel test dbg TSAN
+      run: bazel test --build_tests_only -c dbg --test_output=all --config tsan --define trit_encoding=1 -- //... -//mobile/...
+
+    - name: TE=1 bazel test opt UBSAN
+      run: bazel test --build_tests_only -c opt --test_output=all --config ubsan --define trit_encoding=1 -- //... -//mobile/...
+
+    - name: TE=1 bazel test dbg UBSAN
+      run: bazel test --build_tests_only -c dbg --test_output=all --config ubsan --define trit_encoding=1 -- //... -//mobile/...
+
+    - name: TE=3 bazel test opt
+      run: bazel test --build_tests_only -c opt --test_output=all --define trit_encoding=3 -- //... -//mobile/ios/...
+
+    - name: TE=3 bazel test debug
+      run: bazel test --build_tests_only -c dbg --test_output=all --define trit_encoding=3 -- //... -//mobile/ios/...
+
+    - name: TE=4 bazel test opt
+      run: bazel test --build_tests_only -c opt --test_output=all --define trit_encoding=4 -- //... -//mobile/ios/...
+
+    - name: TE=4 bazel test debug
+      run: bazel test --build_tests_only -c dbg --test_output=all --define trit_encoding=4 -- //... -//mobile/ios/...
+
+    - name: TE=5 bazel test opt
+      run: bazel test --build_tests_only -c opt --test_output=all --define trit_encoding=5 -- //... -//mobile/ios/...
+
+    - name: TE=5 bazel test debug
+      run: bazel test --build_tests_only -c dbg --test_output=all --define trit_encoding=5 -- //... -//mobile/ios/...
+
+    - name: CMake script
+      run: |
+        mkdir build
+        cd build
+        cmake -DCMAKE_INSTALL_PREFIX=. -DTRINARY_TEST=ON .. 
+        make -j16 && make test
+
+    - name: Bazel test bootlin x86_64 toolchains
+      run: bazel test --build_tests_only --test_output=all --config=bootlin_x86_64_core_i7  -- //... -//mobile/ios/...
+
+    - name: bazel test bootlin i686 toolchains
+      run: bazel test --build_tests_only --test_output=all --config=bootlin_i686 -- //... -//mobile/ios/...
