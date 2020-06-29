@@ -103,7 +103,7 @@ retcode_t bundle_miner_mine(byte_t const *const bundle_normalized_max, uint8_t c
                             bundle_miner_ctx_t *const ctxs, size_t num_ctxs, bool *const optimal_index_found) {
   retcode_t ret = RC_OK;
   uint32_t rounded_count = count + (num_ctxs - count % num_ctxs);
-  thread_handle_t *threads = (thread_handle_t *)malloc(sizeof(thread_handle_t) * num_ctxs);
+  thread_handle_t *threads = NULL;
   uint64_t start_index = 0;
   double probability = 1.0;
 
@@ -115,8 +115,10 @@ retcode_t bundle_miner_mine(byte_t const *const bundle_normalized_max, uint8_t c
     return RC_UTILS_BUNDLE_MINER_BAD_PARAM;
   }
 
+  threads = (thread_handle_t *)malloc(sizeof(thread_handle_t) * num_ctxs);
   if (ctxs == NULL || threads == NULL) {
-    return RC_OOM;
+    ret = RC_OOM;
+    goto done;
   }
 
   start_index = trits_to_long(essence + OBSOLETE_TAG_OFFSET, NUM_TRITS_OBSOLETE_TAG);
@@ -154,7 +156,9 @@ retcode_t bundle_miner_mine(byte_t const *const bundle_normalized_max, uint8_t c
 
 done:
 
-  free(threads);
+  if (threads) {
+    free(threads);
+  }
 
   return ret;
 }
