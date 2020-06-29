@@ -20,7 +20,7 @@ jobs:
   
     - name: Install buildifier
       run: |
-        sudo wget -q https://github.com/bazelbuild/buildtools/releases/download/0.29.0/buildifier -O /usr/local/bin/buildifier
+        sudo wget -q https://github.com/bazelbuild/buildtools/releases/download/3.2.0/buildifier -O /usr/local/bin/buildifier
         sudo chmod +x /usr/local/bin/buildifier
 
     - name: Coding style check
