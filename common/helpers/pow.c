@@ -124,12 +124,17 @@ IOTA_EXPORT retcode_t iota_pow_bundle(bundle_transactions_t *const bundle, flex_
     }
 
     if (transaction_current_index(tx) == transaction_last_index(tx)) {
-      transaction_set_trunk(tx, trunk);
-      transaction_set_branch(tx, branch);
+      if (trunk && branch) {
+        transaction_set_trunk(tx, trunk);
+        transaction_set_branch(tx, branch);
+      }      
     } else {
-      transaction_set_trunk(tx, ctrunk);
-      transaction_set_branch(tx, trunk);
+      if (trunk && branch) {
+        transaction_set_trunk(tx, ctrunk);
+        transaction_set_branch(tx, trunk);
+      }
       free(ctrunk);
+      ctrunk = NULL;
     }
     transaction_set_attachment_timestamp(tx, current_timestamp_ms());
     transaction_set_attachment_timestamp_lower(tx, 0);
