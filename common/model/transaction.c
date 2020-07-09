@@ -298,7 +298,7 @@ void transaction_free(iota_transaction_t *const transaction) { free(transaction)
 void transaction_obj_dump(iota_transaction_t *tx_obj) {
   field_mask_t old_mask;
   memcpy(&old_mask, &tx_obj->loaded_columns_mask, sizeof(field_mask_t));
-  memset(&tx_obj->loaded_columns_mask, 0xFFFFF, sizeof(field_mask_t));
+  memset(&tx_obj->loaded_columns_mask, 0xFFFF, sizeof(field_mask_t));
 
   printf("==========Transaction Object==========\n");
   // address
