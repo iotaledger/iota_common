@@ -30,10 +30,13 @@ retcode_t {KEY_TYPE}_to_{VALUE_TYPE}_map_add({KEY_TYPE}_to_{VALUE_TYPE}_map_t *c
   }
 
   if ((map_entry->key = ({KEY_TYPE} *)malloc(map->key_size)) == NULL) {
+    free(map_entry);
     return RC_OOM;
   }
 
   if ((map_entry->value = ({VALUE_TYPE} *)malloc(map->value_size)) == NULL) {
+    free(map_entry->key);
+    free(map_entry);
     return RC_OOM;
   }
 
