@@ -186,7 +186,9 @@ void *run_search_thread(void *const data) {
     // Update/increment range
     if (ptrit_hincr(inst->end - inst->begin, inst->pcurl->state + inst->begin)) {
       // Overflow, search range exhausted, set fail status and exit thread
+      rw_lock_handle_rdlock(inst->statusLock);
       inst->status = SEARCH_NOT_FOUND;
+      rw_lock_handle_unlock(inst->statusLock);
       break;
     }
   }
